@@ -68,3 +68,49 @@ Configure in `.env` for full functionality:
 - **Cloudinary** — resume uploads (signed URLs)
 
 Without these, notifications log to console in development.
+
+## Deploy to Vercel
+
+Login **requires PostgreSQL** — SQLite does not work on Vercel serverless.
+
+### 1. Create a PostgreSQL database
+
+Use [Neon](https://neon.tech) (free), [Supabase](https://supabase.com), or Vercel Postgres.
+
+**Quick path via Vercel CLI:**
+
+```bash
+npx vercel link --project trust-hire
+# Accept terms in browser, then:
+npx vercel integration add neon
+# Connect database in Vercel → Storage tab
+npx vercel env pull .env.production.local
+npm run db:setup-production
+```
+
+Neon terms (one-time): https://vercel.com/vineshjm-3253s-projects/~/integrations/accept-terms/neon
+
+### 2. Set Vercel environment variables
+
+In **Vercel → Project → Settings → Environment Variables** (Production + Preview):
+
+| Variable | Value |
+|----------|-------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `NEXTAUTH_SECRET` | Random secret (`openssl rand -base64 32`) |
+| `NEXTAUTH_URL` | `https://your-app.vercel.app` (no trailing slash) |
+
+### 3. Initialize the production database (one-time)
+
+From your machine, with production `DATABASE_URL` in `.env`:
+
+```bash
+npm run db:push
+npm run db:seed
+```
+
+### 4. Deploy
+
+Push to GitHub — Vercel redeploys automatically. Test login with seeded demo accounts.
+
+If login fails, check **Vercel → Deployments → Functions → Logs** for `[auth] authorize failed` errors.

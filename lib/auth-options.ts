@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
@@ -19,37 +20,48 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase() },
-          include: { profile: true },
-        });
-        if (!user) return null;
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email.toLowerCase() },
+            include: { profile: true },
+          });
+          if (!user) return null;
 
-        const valid = await bcrypt.compare(credentials.password, user.passwordHash);
-        if (!valid) return null;
+          const valid = await bcrypt.compare(credentials.password, user.passwordHash);
+          if (!valid) return null;
 
-        if (user.status === "PENDING") {
-          throw new Error("PENDING_APPROVAL");
-        }
-        if (user.status === "SUSPENDED") {
-          throw new Error("ACCOUNT_SUSPENDED");
-        }
-        if (user.status === "FROZEN") {
-          throw new Error("ACCOUNT_FROZEN");
-        }
-        if (user.status === "DELETED") {
-          throw new Error("ACCOUNT_DELETED");
-        }
+          if (user.status === "PENDING") {
+            throw new Error("PENDING_APPROVAL");
+          }
+          if (user.status === "SUSPENDED") {
+            throw new Error("ACCOUNT_SUSPENDED");
+          }
+          if (user.status === "FROZEN") {
+            throw new Error("ACCOUNT_FROZEN");
+          }
+          if (user.status === "DELETED") {
+            throw new Error("ACCOUNT_DELETED");
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          status: user.status,
-          name: user.profile
-            ? `${user.profile.firstName} ${user.profile.lastName}`
-            : user.email,
-        };
+          return {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            status: user.status,
+            name: user.profile
+              ? `${user.profile.firstName} ${user.profile.lastName}`
+              : user.email,
+          };
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            (error.message.startsWith("ACCOUNT_") || error.message === "PENDING_APPROVAL")
+          ) {
+            throw error;
+          }
+          console.error("[auth] authorize failed:", error);
+          return null;
+        }
       },
     }),
   ],

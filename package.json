@@ -9,7 +9,9 @@
     "lint": "node node_modules/next/dist/bin/next lint",
     "db:generate": "node node_modules/prisma/build/index.js generate",
     "db:push": "node node_modules/prisma/build/index.js db push",
-    "db:seed": "node node_modules/tsx/dist/cli.mjs prisma/seed.ts"
+    "db:seed": "node node_modules/tsx/dist/cli.mjs prisma/seed.ts",
+    "db:setup-production": "node scripts/setup-production-db.mjs",
+    "postinstall": "node node_modules/prisma/build/index.js generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

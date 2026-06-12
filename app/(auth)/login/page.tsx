@@ -38,6 +38,11 @@ export default function LoginPage() {
 
     setLoading(false);
 
+    if (!result?.ok) {
+      setError(ERROR_MESSAGES[result?.error ?? ""] || "Login failed. Please try again.");
+      return;
+    }
+
     if (result?.error) {
       setError(ERROR_MESSAGES[result.error] || "Login failed. Please try again.");
       return;
