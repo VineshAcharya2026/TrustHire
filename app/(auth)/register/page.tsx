@@ -1,0 +1,159 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const [role, setRole] = useState<"REFERRER" | "EMPLOYER">("REFERRER");
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    companyName: "",
+    website: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...form, role }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (!res.ok) {
+      setError(typeof data.error === "string" ? data.error : "Registration failed");
+      return;
+    }
+
+    router.push("/pending-approval");
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-12">
+      <Card className="w-full max-w-lg animate-fade-in shadow-card-hover">
+        <CardHeader>
+          <CardTitle>Create your account</CardTitle>
+          <CardDescription>Join TrustHire as an employer or referrer</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-6 grid grid-cols-2 gap-2">
+            {(["REFERRER", "EMPLOYER"] as const).map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRole(r)}
+                className={cn(
+                  "rounded-md border px-4 py-3 text-sm font-medium transition-all duration-200",
+                  role === r
+                    ? "border-primary bg-primary text-white shadow-card"
+                    : "border-primary/15 bg-white text-muted hover:border-primary/30 hover:shadow-subtle"
+                )}
+              >
+                {r === "REFERRER" ? "Referrer" : "Employer"}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="rounded-md border border-error/20 bg-red-50 px-3 py-2 text-sm text-error">
+                {error}
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>First name</Label>
+                <Input
+                  value={form.firstName}
+                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Last name</Label>
+                <Input
+                  value={form.lastName}
+                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Phone</Label>
+              <Input
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
+            </div>
+            {role === "EMPLOYER" && (
+              <>
+                <div className="space-y-2">
+                  <Label>Company name</Label>
+                  <Input
+                    value={form.companyName}
+                    onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Website (optional)</Label>
+                  <Input
+                    value={form.website}
+                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    placeholder="https://"
+                  />
+                </div>
+              </>
+            )}
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input
+                type="password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                required
+                minLength={8}
+              />
+            </div>
+            <Button type="submit" className="w-full" variant="accent" disabled={loading}>
+              {loading ? "Creating account..." : "Create account"}
+            </Button>
+          </form>
+          <p className="mt-6 text-center text-sm text-muted">
+            Already have an account?{" "}
+            <Link href="/login" className="font-medium text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

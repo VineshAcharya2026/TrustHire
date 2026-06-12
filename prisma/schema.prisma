@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  phone         String?    @unique
+  passwordHash  String
+  role          Role       @default(REFERRER)
+  status        UserStatus @default(PENDING)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  profile       Profile?
+  employer      Employer?
+  referrals     Referral[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+}
+
+enum Role {
+  ADMIN
+  EMPLOYER
+  REFERRER
+  CANDIDATE
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  FROZEN
+  DELETED
+}
+
+model Profile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName String
+  lastName  String
+  avatar    String?
+  bio       String?
+}
+
+model Employer {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  website     String?
+  verified    Boolean @default(false)
+  jobs        Job[]
+}
+
+model Job {
+  id           String     @id @default(cuid())
+  employerId   String
+  employer     Employer   @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  requirements String?
+  rewardAmount Float
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  referrals    Referral[]
+}
+
+model Referral {
+  id             String               @id @default(cuid())
+  jobId          String
+  job            Job                  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  referrerId     String
+  referrer       User                 @relation(fields: [referrerId], references: [id])
+  candidateName  String
+  candidateEmail String
+  candidatePhone String
+  resumeUrl      String?
+  status         ReferralStatus       @default(SUBMITTED)
+  submittedAt    DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  reward         Reward?
+  milestones     RetentionMilestone[]
+  auditLogs      AuditLog[]
+
+  @@unique([jobId, candidateEmail])
+}
+
+enum ReferralStatus {
+  SUBMITTED
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_DONE
+  OFFER_MADE
+  HIRED
+  REJECTED
+}
+
+model Reward {
+  id             String       @id @default(cuid())
+  referralId     String       @unique
+  referral       Referral     @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  totalAmount    Float
+  status         RewardStatus @default(LOCKED)
+  releasedAmount Float        @default(0)
+  createdAt      DateTime     @default(now())
+  payouts        Payout[]
+}
+
+enum RewardStatus {
+  LOCKED
+  PARTIAL
+  RELEASED
+  CANCELLED
+  DISPUTED
+}
+
+model RetentionMilestone {
+  id          String    @id @default(cuid())
+  referralId  String
+  referral    Referral  @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  dayMark     Int
+  percentage  Float
+  confirmed   Boolean   @default(false)
+  confirmedAt DateTime?
+}
+
+model Payout {
+  id         String    @id @default(cuid())
+  rewardId   String
+  reward     Reward    @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  amount     Float
+  status     String    @default("PENDING")
+  approvedBy String?
+  approvedAt DateTime?
+  note       String?
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id])
+  action     String
+  entity     String
+  entityId   String?
+  referralId String?
+  referral   Referral? @relation(fields: [referralId], references: [id])
+  ipAddress  String?
+  metadata   Json?
+  createdAt  DateTime  @default(now())
+}
+
+model Blacklist {
+  id        String   @id @default(cuid())
+  type      String
+  value     String   @unique
+  reason    String?
+  addedBy   String
+  createdAt DateTime @default(now())
+}
+
+model PlatformConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  read      Boolean  @default(false)
+  type      String
+  createdAt DateTime @default(now())
+}
