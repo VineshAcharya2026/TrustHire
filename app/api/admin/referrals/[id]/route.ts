@@ -12,6 +12,27 @@ const schema = z.object({
   reason: z.string().min(1),
 });
 
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { error } = await requireRole("ADMIN");
+  if (error) return error;
+
+  const referral = await prisma.referral.findUnique({
+    where: { id: params.id },
+    include: {
+      job: { include: { employer: true } },
+      referrer: { include: { profile: true } },
+      reward: { include: { payouts: true } },
+      milestones: true,
+    },
+  });
+
+  if (!referral) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(referral);
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }

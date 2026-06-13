@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ReferralStatusBadge, RewardStatusBadge } from "@/components/referrals/StatusBadge";
-import { formatDate } from "@/lib/utils";
+import { LeadOverviewHeader, InfoPanel, InfoRow } from "@/components/referrals/LeadOverview";
+import { ReferralTimeline } from "@/components/referrals/ReferralTimeline";
+import { RewardStatusBadge } from "@/components/referrals/StatusBadge";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import type { ReferralStatus, RewardStatus } from "@prisma/client";
+import { Building2, Calendar, DollarSign, Mail, Wallet } from "lucide-react";
 
 type Referral = {
   id: string;
@@ -13,7 +15,7 @@ type Referral = {
   candidateEmail: string;
   status: ReferralStatus;
   submittedAt: string;
-  job: { title: string; employer: { companyName: string }; rewardAmount: number };
+  job: { title: string; rewardAmount: number; employer: { companyName: string } };
   reward?: {
     status: RewardStatus;
     totalAmount: number;
@@ -23,61 +25,106 @@ type Referral = {
   };
 };
 
-export default function ReferralDetailPage() {
+export default function ReferrerReferralOverviewPage() {
   const { id } = useParams();
   const [referral, setReferral] = useState<Referral | null>(null);
 
   useEffect(() => {
-    fetch("/api/referrer/referrals")
+    fetch(`/api/referrer/referrals/${id}`)
       .then((r) => r.json())
-      .then((refs: Referral[]) => setReferral(refs.find((r) => r.id === id) || null));
+      .then(setReferral);
   }, [id]);
 
-  if (!referral) return <p className="text-muted">Loading...</p>;
+  if (!referral?.id) {
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-32 rounded-lg bg-primary/5" />
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="h-64 rounded-lg bg-primary/5 lg:col-span-2" />
+          <div className="h-64 rounded-lg bg-primary/5" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-primary">{referral.candidateName}</h1>
-        <ReferralStatusBadge status={referral.status} />
-      </div>
+      <LeadOverviewHeader
+        candidateName={referral.candidateName}
+        status={referral.status}
+        subtitle={`${referral.job.title} at ${referral.job.employer.companyName}`}
+        backHref="/dashboard/referrer/referrals"
+        backLabel="Back to my leads"
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p>{referral.job.title} at {referral.job.employer.companyName}</p>
-          <p className="text-muted">Submitted {formatDate(referral.submittedAt)}</p>
-          <p className="text-muted">{referral.candidateEmail}</p>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <ReferralTimeline currentStatus={referral.status} />
 
-      {referral.reward && (
-        <Card className="hover-lift">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Reward</CardTitle>
-            <RewardStatusBadge status={referral.reward.status} />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-6 text-sm">
-              <span>Total: <strong>${referral.reward.totalAmount}</strong></span>
-              <span>Released: <strong>${referral.reward.releasedAmount}</strong></span>
-            </div>
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase text-muted">Milestones</p>
-              {referral.reward.milestones.map((m) => (
-                <div key={m.dayMark} className="flex justify-between rounded-md border border-primary/8 px-3 py-2 text-sm">
-                  <span>Day {m.dayMark} ({m.percentage}%)</span>
-                  <span className={m.confirmed ? "text-success" : "text-muted"}>
-                    {m.confirmed ? "Confirmed" : "Pending"}
-                  </span>
+          {referral.reward ? (
+            <InfoPanel title="Reward tracker">
+              <div className="mb-4 flex items-center justify-between">
+                <RewardStatusBadge status={referral.reward.status} />
+                <span className="text-xl font-bold text-accent">
+                  {formatCurrency(referral.reward.totalAmount)}
+                </span>
+              </div>
+              <InfoRow
+                label="Released"
+                value={formatCurrency(referral.reward.releasedAmount)}
+                icon={<Wallet className="h-3.5 w-3.5" />}
+              />
+              <InfoRow
+                label="Remaining"
+                value={formatCurrency(referral.reward.totalAmount - referral.reward.releasedAmount)}
+                icon={<DollarSign className="h-3.5 w-3.5" />}
+              />
+              <div className="mt-4 space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Milestones</p>
+                {referral.reward.milestones.map((m) => (
+                  <div
+                    key={m.dayMark}
+                    className="flex items-center justify-between rounded-md border border-primary/8 px-3 py-2 text-sm transition-colors hover:bg-surface"
+                  >
+                    <span>Day {m.dayMark} ({m.percentage}%)</span>
+                    <span className={m.confirmed ? "font-medium text-success" : "text-muted"}>
+                      {m.confirmed ? "Confirmed" : "Pending"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {referral.reward.payouts.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted">Payout history</p>
+                  {referral.reward.payouts.map((p, i) => (
+                    <div key={i} className="flex justify-between text-sm text-muted">
+                      <span>{p.status}</span>
+                      <span className="font-medium text-primary">{formatCurrency(p.amount)}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              )}
+            </InfoPanel>
+          ) : (
+            <InfoPanel title="Potential reward">
+              <p className="text-sm text-muted">
+                If this candidate is hired, you&apos;ll earn{" "}
+                <strong className="text-accent">{formatCurrency(referral.job.rewardAmount)}</strong> in milestone payouts.
+              </p>
+            </InfoPanel>
+          )}
+        </div>
+
+        <div className="space-y-6">
+          <InfoPanel title="Candidate">
+            <InfoRow label="Email" value={referral.candidateEmail} icon={<Mail className="h-3.5 w-3.5" />} />
+            <InfoRow label="Company" value={referral.job.employer.companyName} icon={<Building2 className="h-3.5 w-3.5" />} />
+            <InfoRow label="Role" value={referral.job.title} />
+            <InfoRow label="Bounty" value={formatCurrency(referral.job.rewardAmount)} icon={<DollarSign className="h-3.5 w-3.5" />} />
+            <InfoRow label="Submitted" value={formatDate(referral.submittedAt)} icon={<Calendar className="h-3.5 w-3.5" />} />
+          </InfoPanel>
+        </div>
+      </div>
     </div>
   );
 }

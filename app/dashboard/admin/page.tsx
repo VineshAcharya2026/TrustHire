@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { StatCard } from "@/components/charts/StatCard";
-import { Users, FileText, Banknote, AlertTriangle } from "lucide-react";
+import { RecentLeadsPanel } from "@/components/referrals/RecentLeadsPanel";
+import { Users, FileText, Banknote, AlertTriangle, UserCheck } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 async function getStats() {
   const [
@@ -42,24 +45,56 @@ export default async function AdminDashboardPage() {
   const stats = await getStats();
   const pending = await prisma.user.count({ where: { status: "PENDING" } });
 
+  const recentReferrals = await prisma.referral.findMany({
+    take: 5,
+    orderBy: { submittedAt: "desc" },
+    include: { job: { include: { employer: true } } },
+  });
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-primary">Founder Dashboard</h1>
-        <p className="text-muted">Platform-wide KPIs and activity</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-primary">Founder Dashboard</h1>
+          <p className="mt-1 text-sm text-muted">Platform-wide KPIs and latest activity</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/admin/referrals">All leads</Link>
+          </Button>
+          <Button variant="accent" asChild>
+            <Link href="/dashboard/admin/users">Manage users</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total users" value={stats.totalUsers} icon={Users} />
-        <StatCard label="Referrals" value={stats.totalReferrals} icon={FileText} />
-        <StatCard label="Hires" value={stats.totalHires} icon={Users} trend={`${pending} pending approval`} />
+        <StatCard label="Total leads" value={stats.totalReferrals} icon={FileText} />
+        <StatCard label="Hires" value={stats.totalHires} icon={UserCheck} trend={`${pending} pending approval`} />
         <StatCard label="Pending payouts" value={stats.pendingPayouts} icon={Banknote} />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Locked liability" value={formatCurrency(stats.locked)} icon={Banknote} />
-        <StatCard label="Released rewards" value={formatCurrency(stats.released)} icon={Banknote} />
-        <StatCard label="Disputes" value={stats.disputes} icon={AlertTriangle} />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
+          <RecentLeadsPanel
+            title="Recent leads"
+            viewAllHref="/dashboard/admin/referrals"
+            leads={recentReferrals.map((r) => ({
+              id: r.id,
+              candidateName: r.candidateName,
+              status: r.status,
+              submittedAt: r.submittedAt,
+              subtitle: `${r.job.title} · ${r.job.employer.companyName}`,
+              href: `/dashboard/admin/referrals/${r.id}`,
+            }))}
+          />
+        </div>
+        <div className="space-y-4">
+          <StatCard label="Locked liability" value={formatCurrency(stats.locked)} icon={Banknote} />
+          <StatCard label="Released rewards" value={formatCurrency(stats.released)} icon={Banknote} />
+          <StatCard label="Disputes" value={stats.disputes} icon={AlertTriangle} />
+        </div>
       </div>
     </div>
   );

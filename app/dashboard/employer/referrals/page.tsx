@@ -1,58 +1,106 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ReferralStatusBadge } from "@/components/referrals/StatusBadge";
+import { useEffect, useMemo, useState } from "react";
+import { LeadCard, LeadCardGrid, LeadCardSkeleton } from "@/components/referrals/LeadCard";
+import { PageHeader, FilterBar, EmptyState } from "@/components/layout/PageHeader";
 import type { ReferralStatus } from "@prisma/client";
 
 type Referral = {
   id: string;
   candidateName: string;
+  candidateEmail: string;
   status: ReferralStatus;
-  job: { title: string };
+  submittedAt: string;
+  job: { title: string; rewardAmount: number };
+  referrer?: { profile?: { firstName: string; lastName: string } };
 };
+
+const FILTERS = [
+  { value: "", label: "All statuses" },
+  { value: "SUBMITTED", label: "Submitted" },
+  { value: "SHORTLISTED", label: "Shortlisted" },
+  { value: "INTERVIEW_SCHEDULED", label: "Interview" },
+  { value: "HIRED", label: "Hired" },
+  { value: "REJECTED", label: "Rejected" },
+];
 
 export default function EmployerReferralsPage() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
+    setLoading(true);
     const q = filter ? `?status=${filter}` : "";
-    fetch(`/api/employer/referrals${q}`).then((r) => r.json()).then(setReferrals);
+    fetch(`/api/employer/referrals${q}`)
+      .then((r) => r.json())
+      .then(setReferrals)
+      .finally(() => setLoading(false));
   }, [filter]);
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    if (!q) return referrals;
+    return referrals.filter(
+      (r) =>
+        r.candidateName.toLowerCase().includes(q) ||
+        r.candidateEmail.toLowerCase().includes(q) ||
+        r.job.title.toLowerCase().includes(q)
+    );
+  }, [referrals, search]);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-primary">All Referrals</h1>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="rounded-sm border border-primary/15 px-3 py-2 text-sm shadow-subtle"
-        >
-          <option value="">All statuses</option>
-          <option value="SUBMITTED">Submitted</option>
-          <option value="HIRED">Hired</option>
-          <option value="REJECTED">Rejected</option>
-        </select>
-      </div>
+      <PageHeader
+        title="Candidate leads"
+        description={`${referrals.length} referrals across your job postings`}
+      />
 
-      <div className="space-y-3">
-        {referrals.map((r) => (
-          <Link key={r.id} href={`/dashboard/employer/referrals/${r.id}`}>
-            <Card className="cursor-pointer transition-all duration-200 hover:shadow-card-hover">
-              <CardHeader className="flex flex-row items-center justify-between py-4">
-                <div>
-                  <CardTitle className="text-base">{r.candidateName}</CardTitle>
-                  <p className="text-sm text-muted">{r.job.title}</p>
-                </div>
-                <ReferralStatusBadge status={r.status} />
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
-      </div>
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        filter={filter}
+        onFilterChange={setFilter}
+        filterOptions={FILTERS}
+        placeholder="Search candidates or jobs..."
+      />
+
+      {loading ? (
+        <LeadCardGrid>
+          {[1, 2, 3].map((i) => (
+            <LeadCardSkeleton key={i} />
+          ))}
+        </LeadCardGrid>
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          title="No leads yet"
+          description="Referrals will appear here when referrers submit candidates for your jobs."
+        />
+      ) : (
+        <LeadCardGrid>
+          {filtered.map((r) => (
+            <LeadCard
+              key={r.id}
+              showReferrer
+              showReward
+              lead={{
+                id: r.id,
+                candidateName: r.candidateName,
+                candidateEmail: r.candidateEmail,
+                status: r.status,
+                submittedAt: r.submittedAt,
+                jobTitle: r.job.title,
+                rewardAmount: r.job.rewardAmount,
+                referrerName: r.referrer?.profile
+                  ? `${r.referrer.profile.firstName} ${r.referrer.profile.lastName}`
+                  : undefined,
+                href: `/dashboard/employer/referrals/${r.id}`,
+              }}
+            />
+          ))}
+        </LeadCardGrid>
+      )}
     </div>
   );
 }
