@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/utils";
+import { Alert } from "@/components/ui/alert";
+import { JobCard } from "@/components/jobs/JobCard";
+import { EntityCardGrid } from "@/components/layout/OverviewHeader";
+import { EmptyState, FilterBar, PageHeader } from "@/components/layout/PageHeader";
+import { LeadCardSkeleton } from "@/components/referrals/LeadCard";
+import { fetchJson } from "@/lib/api-utils";
 import { Plus } from "lucide-react";
 
 type Job = {
@@ -17,36 +21,105 @@ type Job = {
 
 export default function EmployerJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+
   useEffect(() => {
-    fetch("/api/employer/jobs").then((r) => r.json()).then(setJobs);
+    fetchJson<Job[]>("/api/employer/jobs").then(({ data, error: err }) => {
+      setLoading(false);
+      if (err) {
+        setError(err);
+        return;
+      }
+      setJobs(data ?? []);
+    });
   }, []);
+
+  const filtered = useMemo(() => {
+    return jobs.filter((j) => {
+      const matchesSearch = j.title.toLowerCase().includes(search.toLowerCase());
+      const matchesFilter =
+        filter === "all" ||
+        (filter === "active" && j.isActive) ||
+        (filter === "closed" && !j.isActive);
+      return matchesSearch && matchesFilter;
+    });
+  }, [jobs, search, filter]);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-primary">Job Postings</h1>
-        <Button variant="accent" asChild className="hover-lift">
-          <Link href="/dashboard/employer/jobs/new">
-            <Plus className="h-4 w-4" /> New job
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Job Postings"
+        description="Manage open roles and referral bounties."
+        actions={
+          <Button variant="accent" asChild>
+            <Link href="/dashboard/employer/jobs/new">
+              <Plus className="h-4 w-4" />
+              New job
+            </Link>
+          </Button>
+        }
+      />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {jobs.map((job) => (
-          <Link key={job.id} href={`/dashboard/employer/jobs/${job.id}`}>
-            <Card className="h-full cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover">
-              <CardHeader>
-                <CardTitle className="text-base">{job.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex justify-between text-sm">
-                <span className="font-semibold text-accent">{formatCurrency(job.rewardAmount)} bounty</span>
-                <span className="text-muted">{job._count.referrals} referrals</span>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+      {error && <Alert variant="error">{error}</Alert>}
+
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        filter={filter}
+        onFilterChange={setFilter}
+        placeholder="Search jobs..."
+        filterOptions={[
+          { value: "all", label: "All jobs" },
+          { value: "active", label: "Active" },
+          { value: "closed", label: "Closed" },
+        ]}
+      />
+
+      {loading ? (
+        <EntityCardGrid>
+          {[1, 2, 3].map((i) => (
+            <LeadCardSkeleton key={i} />
+          ))}
+        </EntityCardGrid>
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          title={jobs.length === 0 ? "No jobs yet" : "No matching jobs"}
+          description={
+            jobs.length === 0
+              ? "Post your first role to start receiving referrals from trusted partners."
+              : "Try adjusting your search or filters."
+          }
+          action={
+            jobs.length === 0 ? (
+              <Button variant="accent" asChild>
+                <Link href="/dashboard/employer/jobs/new">
+                  <Plus className="h-4 w-4" />
+                  Post a job
+                </Link>
+              </Button>
+            ) : undefined
+          }
+        />
+      ) : (
+        <EntityCardGrid>
+          {filtered.map((job) => (
+            <JobCard
+              key={job.id}
+              job={{
+                id: job.id,
+                title: job.title,
+                rewardAmount: job.rewardAmount,
+                isActive: job.isActive,
+                referralCount: job._count.referrals,
+                href: `/dashboard/employer/jobs/${job.id}`,
+              }}
+            />
+          ))}
+        </EntityCardGrid>
+      )}
     </div>
   );
 }

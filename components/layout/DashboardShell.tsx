@@ -22,7 +22,7 @@ export function DashboardShell({
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen bg-surface">
+    <div className="flex min-h-screen dashboard-bg">
       <Sidebar items={navItems} title={title} />
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">

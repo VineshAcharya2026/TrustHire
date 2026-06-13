@@ -15,7 +15,7 @@ export function PageHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-primary">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted">{description}</p>}
+        {description && <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -38,7 +38,7 @@ export function FilterBar({
   placeholder?: string;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-primary/8 bg-white p-4 shadow-subtle sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 rounded-xl border border-primary/8 bg-white/90 p-4 shadow-subtle backdrop-blur-sm sm:flex-row sm:items-center">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <Input
@@ -76,7 +76,7 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-primary/15 bg-white px-6 py-16 text-center shadow-subtle">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-primary/15 bg-white/80 px-6 py-16 text-center shadow-subtle backdrop-blur-sm">
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/5">
         <Search className="h-6 w-6 text-muted" />
       </div>

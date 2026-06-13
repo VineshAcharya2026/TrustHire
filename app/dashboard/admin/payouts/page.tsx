@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/utils";
+import { PayoutCard } from "@/components/payouts/PayoutCard";
+import { EntityCardGrid } from "@/components/layout/OverviewHeader";
+import { EmptyState, PageHeader } from "@/components/layout/PageHeader";
+import { LeadCardSkeleton } from "@/components/referrals/LeadCard";
+import { Alert } from "@/components/ui/alert";
+import { fetchJson } from "@/lib/api-utils";
 
 type Payout = {
   id: string;
@@ -13,53 +16,58 @@ type Payout = {
     referral: {
       candidateName: string;
       job: { title: string };
-      referrer: { profile?: { firstName: string; lastName: string } };
+      referrer: { profile?: { firstName: string; lastName: string }; email: string };
     };
   };
 };
 
 export default function AdminPayoutsPage() {
   const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const load = () => fetch("/api/admin/payouts/pending").then((r) => r.json()).then(setPayouts);
-  useEffect(() => { load(); }, []);
-
-  async function approve(id: string) {
-    await fetch(`/api/admin/payouts/${id}/approve`, { method: "PATCH" });
-    load();
-  }
-
-  async function hold(id: string) {
-    await fetch(`/api/admin/payouts/${id}/hold`, { method: "PATCH" });
-    load();
-  }
+  useEffect(() => {
+    fetchJson<Payout[]>("/api/admin/payouts/pending").then(({ data, error: err }) => {
+      setLoading(false);
+      if (err) setError(err);
+      else setPayouts(data ?? []);
+    });
+  }, []);
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-primary">Payout Queue</h1>
-      {payouts.length === 0 ? (
-        <p className="text-muted">No pending payouts.</p>
+      <PageHeader
+        title="Payout Queue"
+        description="Review and approve milestone payouts to referrers."
+      />
+
+      {error && <Alert variant="error">{error}</Alert>}
+
+      {loading ? (
+        <EntityCardGrid>
+          {[1, 2].map((i) => <LeadCardSkeleton key={i} />)}
+        </EntityCardGrid>
+      ) : payouts.length === 0 ? (
+        <EmptyState title="No pending payouts" description="All caught up — no payouts waiting for approval." />
       ) : (
-        payouts.map((p) => (
-          <Card key={p.id} className="hover-lift">
-            <CardHeader>
-              <CardTitle className="text-base">
-                {p.reward.referral.candidateName} — {p.reward.referral.job.title}
-              </CardTitle>
-              <p className="text-sm text-muted">
-                Referrer: {p.reward.referral.referrer.profile?.firstName}{" "}
-                {p.reward.referral.referrer.profile?.lastName}
-              </p>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between">
-              <span className="text-xl font-bold text-accent">{formatCurrency(p.amount)}</span>
-              <div className="flex gap-2">
-                <Button size="sm" variant="accent" onClick={() => approve(p.id)}>Approve</Button>
-                <Button size="sm" variant="outline" onClick={() => hold(p.id)}>Hold</Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))
+        <EntityCardGrid>
+          {payouts.map((p) => (
+            <PayoutCard
+              key={p.id}
+              payout={{
+                id: p.id,
+                amount: p.amount,
+                status: p.status,
+                candidateName: p.reward.referral.candidateName,
+                jobTitle: p.reward.referral.job.title,
+                referrerName: p.reward.referral.referrer.profile
+                  ? `${p.reward.referral.referrer.profile.firstName} ${p.reward.referral.referrer.profile.lastName}`
+                  : p.reward.referral.referrer.email,
+                href: `/dashboard/admin/payouts/${p.id}`,
+              }}
+            />
+          ))}
+        </EntityCardGrid>
       )}
     </div>
   );

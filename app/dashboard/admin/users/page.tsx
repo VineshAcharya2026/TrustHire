@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useMemo, useState } from "react";
+import { UserCard } from "@/components/users/UserCard";
+import { EntityCardGrid } from "@/components/layout/OverviewHeader";
+import { EmptyState, FilterBar, PageHeader } from "@/components/layout/PageHeader";
+import { LeadCardSkeleton } from "@/components/referrals/LeadCard";
+import { Alert } from "@/components/ui/alert";
+import { fetchJson } from "@/lib/api-utils";
 
 type User = {
   id: string;
@@ -16,74 +19,76 @@ type User = {
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState("");
 
-  const load = () => {
+  useEffect(() => {
     const q = filter ? `?status=${filter}` : "";
-    fetch(`/api/admin/users${q}`).then((r) => r.json()).then(setUsers);
-  };
-
-  useEffect(() => { load(); }, [filter]);
-
-  async function approve(id: string) {
-    await fetch(`/api/admin/users/${id}/approve`, { method: "PATCH" });
-    load();
-  }
-
-  async function suspend(id: string) {
-    const reason = prompt("Suspension reason:");
-    if (!reason) return;
-    await fetch(`/api/admin/users/${id}/suspend`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reason }),
+    fetchJson<User[]>(`/api/admin/users${q}`).then(({ data, error: err }) => {
+      setLoading(false);
+      if (err) setError(err);
+      else setUsers(data ?? []);
     });
-    load();
-  }
+  }, [filter]);
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return users.filter((u) => {
+      const name = u.profile ? `${u.profile.firstName} ${u.profile.lastName}`.toLowerCase() : "";
+      return name.includes(q) || u.email.toLowerCase().includes(q) || u.employer?.companyName?.toLowerCase().includes(q);
+    });
+  }, [users, search]);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-primary">Users</h1>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="rounded-sm border border-primary/15 px-3 py-2 text-sm shadow-subtle transition-all hover:shadow-card"
-        >
-          <option value="">All statuses</option>
-          <option value="PENDING">Pending</option>
-          <option value="ACTIVE">Active</option>
-          <option value="SUSPENDED">Suspended</option>
-          <option value="FROZEN">Frozen</option>
-        </select>
-      </div>
+      <PageHeader
+        title="Users"
+        description="Manage platform accounts, approvals, and access."
+      />
 
-      <div className="space-y-3">
-        {users.map((u) => (
-          <Card key={u.id} className="transition-all duration-200 hover:shadow-card-hover">
-            <CardHeader className="flex flex-row items-center justify-between py-4">
-              <div>
-                <CardTitle className="text-base">
-                  {u.profile ? `${u.profile.firstName} ${u.profile.lastName}` : u.email}
-                </CardTitle>
-                <p className="text-sm text-muted">{u.email} · {u.employer?.companyName}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="accent">{u.role}</Badge>
-                <Badge>{u.status}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="flex gap-2 pb-4">
-              {u.status === "PENDING" && (
-                <Button size="sm" variant="accent" onClick={() => approve(u.id)}>Approve</Button>
-              )}
-              {u.status === "ACTIVE" && (
-                <Button size="sm" variant="outline" onClick={() => suspend(u.id)}>Suspend</Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {error && <Alert variant="error">{error}</Alert>}
+
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        filter={filter}
+        onFilterChange={setFilter}
+        placeholder="Search users..."
+        filterOptions={[
+          { value: "", label: "All statuses" },
+          { value: "PENDING", label: "Pending" },
+          { value: "ACTIVE", label: "Active" },
+          { value: "SUSPENDED", label: "Suspended" },
+          { value: "FROZEN", label: "Frozen" },
+        ]}
+      />
+
+      {loading ? (
+        <EntityCardGrid>
+          {[1, 2, 3].map((i) => <LeadCardSkeleton key={i} />)}
+        </EntityCardGrid>
+      ) : filtered.length === 0 ? (
+        <EmptyState title="No users found" description="Try adjusting your search or filters." />
+      ) : (
+        <EntityCardGrid>
+          {filtered.map((u) => (
+            <UserCard
+              key={u.id}
+              user={{
+                id: u.id,
+                name: u.profile ? `${u.profile.firstName} ${u.profile.lastName}` : u.email,
+                email: u.email,
+                role: u.role,
+                status: u.status,
+                companyName: u.employer?.companyName,
+                href: `/dashboard/admin/users/${u.id}`,
+              }}
+            />
+          ))}
+        </EntityCardGrid>
+      )}
     </div>
   );
 }

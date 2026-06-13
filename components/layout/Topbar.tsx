@@ -17,7 +17,7 @@ export function Topbar({
   const { data: session } = useSession();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-primary/8 bg-white/95 px-4 shadow-subtle backdrop-blur-sm lg:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-primary/8 bg-white/90 px-4 shadow-subtle backdrop-blur-md lg:px-6">
       <div className="flex items-center gap-3">
         {onMenuClick && (
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenuClick}>

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
 export default function RegisterPage() {
@@ -47,14 +47,14 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-12">
-      <Card className="w-full max-w-lg animate-fade-in shadow-card-hover">
-        <CardHeader>
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>Join TrustHire as an employer or referrer</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-6 grid grid-cols-2 gap-2">
+    <div className="flex min-h-screen auth-bg items-center justify-center px-4 py-12">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl animate-fade-in">
+        <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
+        <div className="p-8">
+          <h2 className="text-2xl font-bold text-primary">Create your account</h2>
+          <p className="mt-1 text-sm text-muted">Join TrustHire as an employer or referrer</p>
+
+          <div className="mb-6 mt-6 grid grid-cols-2 gap-2">
             {(["REFERRER", "EMPLOYER"] as const).map((r) => (
               <button
                 key={r}
@@ -73,11 +73,7 @@ export default function RegisterPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="rounded-md border border-error/20 bg-red-50 px-3 py-2 text-sm text-error">
-                {error}
-              </div>
-            )}
+            {error && <Alert variant="error">{error}</Alert>}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>First name</Label>
@@ -152,8 +148,8 @@ export default function RegisterPage() {
               Sign in
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
