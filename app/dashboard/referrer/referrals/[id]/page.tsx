@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import { LeadOverviewHeader, InfoPanel, InfoRow } from "@/components/referrals/LeadOverview";
 import { ReferralTimeline } from "@/components/referrals/ReferralTimeline";
 import { RewardStatusBadge } from "@/components/referrals/StatusBadge";
+import { Alert } from "@/components/ui/alert";
+import { fetchJson } from "@/lib/api-utils";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { ReferralStatus, RewardStatus } from "@prisma/client";
 import { Building2, Calendar, DollarSign, Mail, Wallet } from "lucide-react";
@@ -16,11 +18,11 @@ type Referral = {
   status: ReferralStatus;
   submittedAt: string;
   job: { title: string; rewardAmount: number; employer: { companyName: string } };
+  milestones: { dayMark: number; percentage: number; confirmed: boolean }[];
   reward?: {
     status: RewardStatus;
     totalAmount: number;
     releasedAmount: number;
-    milestones: { dayMark: number; percentage: number; confirmed: boolean }[];
     payouts: { amount: number; status: string; approvedAt?: string }[];
   };
 };
@@ -28,14 +30,18 @@ type Referral = {
 export default function ReferrerReferralOverviewPage() {
   const { id } = useParams();
   const [referral, setReferral] = useState<Referral | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/referrer/referrals/${id}`)
-      .then((r) => r.json())
-      .then(setReferral);
+    fetchJson<Referral>(`/api/referrer/referrals/${id}`).then(({ data, error: err }) => {
+      setLoading(false);
+      if (err) setError(err);
+      else if (data) setReferral(data);
+    });
   }, [id]);
 
-  if (!referral?.id) {
+  if (loading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-32 rounded-lg bg-primary/5" />
@@ -46,6 +52,13 @@ export default function ReferrerReferralOverviewPage() {
       </div>
     );
   }
+
+  if (error || !referral) {
+    return <Alert variant="error">{error || "Referral not found"}</Alert>;
+  }
+
+  const milestones = referral.milestones ?? [];
+  const payouts = referral.reward?.payouts ?? [];
 
   return (
     <div className="space-y-6">
@@ -79,24 +92,28 @@ export default function ReferrerReferralOverviewPage() {
                 value={formatCurrency(referral.reward.totalAmount - referral.reward.releasedAmount)}
                 icon={<DollarSign className="h-3.5 w-3.5" />}
               />
-              <div className="mt-4 space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Milestones</p>
-                {referral.reward.milestones.map((m) => (
-                  <div
-                    key={m.dayMark}
-                    className="flex items-center justify-between rounded-md border border-primary/8 px-3 py-2 text-sm transition-colors hover:bg-surface"
-                  >
-                    <span>Day {m.dayMark} ({m.percentage}%)</span>
-                    <span className={m.confirmed ? "font-medium text-success" : "text-muted"}>
-                      {m.confirmed ? "Confirmed" : "Pending"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {referral.reward.payouts.length > 0 && (
+              {milestones.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted">Milestones</p>
+                  {milestones.map((m) => (
+                    <div
+                      key={m.dayMark}
+                      className="flex items-center justify-between rounded-md border border-primary/8 px-3 py-2 text-sm transition-colors hover:bg-surface"
+                    >
+                      <span>
+                        Day {m.dayMark} ({m.percentage}%)
+                      </span>
+                      <span className={m.confirmed ? "font-medium text-success" : "text-muted"}>
+                        {m.confirmed ? "Confirmed" : "Pending"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {payouts.length > 0 && (
                 <div className="mt-4 space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted">Payout history</p>
-                  {referral.reward.payouts.map((p, i) => (
+                  {payouts.map((p, i) => (
                     <div key={i} className="flex justify-between text-sm text-muted">
                       <span>{p.status}</span>
                       <span className="font-medium text-primary">{formatCurrency(p.amount)}</span>
@@ -109,7 +126,8 @@ export default function ReferrerReferralOverviewPage() {
             <InfoPanel title="Potential reward">
               <p className="text-sm text-muted">
                 If this candidate is hired, you&apos;ll earn{" "}
-                <strong className="text-accent">{formatCurrency(referral.job.rewardAmount)}</strong> in milestone payouts.
+                <strong className="text-accent">{formatCurrency(referral.job.rewardAmount)}</strong> in milestone
+                payouts.
               </p>
             </InfoPanel>
           )}
@@ -118,10 +136,22 @@ export default function ReferrerReferralOverviewPage() {
         <div className="space-y-6">
           <InfoPanel title="Candidate">
             <InfoRow label="Email" value={referral.candidateEmail} icon={<Mail className="h-3.5 w-3.5" />} />
-            <InfoRow label="Company" value={referral.job.employer.companyName} icon={<Building2 className="h-3.5 w-3.5" />} />
+            <InfoRow
+              label="Company"
+              value={referral.job.employer.companyName}
+              icon={<Building2 className="h-3.5 w-3.5" />}
+            />
             <InfoRow label="Role" value={referral.job.title} />
-            <InfoRow label="Bounty" value={formatCurrency(referral.job.rewardAmount)} icon={<DollarSign className="h-3.5 w-3.5" />} />
-            <InfoRow label="Submitted" value={formatDate(referral.submittedAt)} icon={<Calendar className="h-3.5 w-3.5" />} />
+            <InfoRow
+              label="Bounty"
+              value={formatCurrency(referral.job.rewardAmount)}
+              icon={<DollarSign className="h-3.5 w-3.5" />}
+            />
+            <InfoRow
+              label="Submitted"
+              value={formatDate(referral.submittedAt)}
+              icon={<Calendar className="h-3.5 w-3.5" />}
+            />
           </InfoPanel>
         </div>
       </div>
