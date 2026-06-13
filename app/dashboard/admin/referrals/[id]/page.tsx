@@ -7,7 +7,7 @@ import { ReferralTimeline } from "@/components/referrals/ReferralTimeline";
 import { RewardStatusBadge } from "@/components/referrals/StatusBadge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { ReferralStatus, RewardStatus } from "@prisma/client";
-import { Building2, Calendar, DollarSign, Mail, Phone, User } from "lucide-react";
+import { Building2, Calendar, IndianRupee, Mail, Phone, User } from "lucide-react";
 
 type Referral = {
   id: string;
@@ -77,7 +77,7 @@ export default function AdminReferralOverviewPage() {
                   {formatCurrency(referral.reward.totalAmount)}
                 </span>
               </div>
-              <InfoRow label="Released" value={formatCurrency(referral.reward.releasedAmount)} icon={<DollarSign className="h-3.5 w-3.5" />} />
+              <InfoRow label="Released" value={formatCurrency(referral.reward.releasedAmount)} icon={<IndianRupee className="h-3.5 w-3.5" />} />
               <InfoRow label="Payouts" value={referral.reward.payouts.length} />
             </InfoPanel>
           )}
@@ -102,7 +102,7 @@ export default function AdminReferralOverviewPage() {
           <InfoPanel title="Referral details">
             <InfoRow label="Referrer" value={referrerName} icon={<User className="h-3.5 w-3.5" />} />
             <InfoRow label="Company" value={referral.job.employer.companyName} icon={<Building2 className="h-3.5 w-3.5" />} />
-            <InfoRow label="Bounty" value={formatCurrency(referral.job.rewardAmount)} icon={<DollarSign className="h-3.5 w-3.5" />} />
+            <InfoRow label="Bounty" value={formatCurrency(referral.job.rewardAmount)} icon={<IndianRupee className="h-3.5 w-3.5" />} />
             <InfoRow label="Submitted" value={formatDate(referral.submittedAt)} icon={<Calendar className="h-3.5 w-3.5" />} />
             <InfoRow label="Last updated" value={formatDate(referral.updatedAt)} icon={<Calendar className="h-3.5 w-3.5" />} />
           </InfoPanel>

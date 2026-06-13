@@ -9,7 +9,7 @@ import { Alert } from "@/components/ui/alert";
 import { fetchJson } from "@/lib/api-utils";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { ReferralStatus, RewardStatus } from "@prisma/client";
-import { Building2, Calendar, DollarSign, Mail, Wallet } from "lucide-react";
+import { Building2, Calendar, IndianRupee, Mail, Wallet } from "lucide-react";
 
 type Referral = {
   id: string;
@@ -90,7 +90,7 @@ export default function ReferrerReferralOverviewPage() {
               <InfoRow
                 label="Remaining"
                 value={formatCurrency(referral.reward.totalAmount - referral.reward.releasedAmount)}
-                icon={<DollarSign className="h-3.5 w-3.5" />}
+                icon={<IndianRupee className="h-3.5 w-3.5" />}
               />
               {milestones.length > 0 && (
                 <div className="mt-4 space-y-2">
@@ -145,7 +145,7 @@ export default function ReferrerReferralOverviewPage() {
             <InfoRow
               label="Bounty"
               value={formatCurrency(referral.job.rewardAmount)}
-              icon={<DollarSign className="h-3.5 w-3.5" />}
+              icon={<IndianRupee className="h-3.5 w-3.5" />}
             />
             <InfoRow
               label="Submitted"

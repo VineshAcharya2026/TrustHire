@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { formatCurrency } from "@/lib/utils";
 
 function getTransporter() {
   if (!process.env.SMTP_HOST || !process.env.SMTP_PASS) return null;
@@ -61,8 +62,8 @@ export async function sendRewardLocked(
 ) {
   await send(
     referrerEmail,
-    `Reward locked: $${amount} for ${jobTitle}`,
-    `<p>Congratulations! A reward of <strong>$${amount}</strong> has been locked for your hire on <strong>${jobTitle}</strong>.</p>`
+    `Reward locked: ${formatCurrency(amount)} for ${jobTitle}`,
+    `<p>Congratulations! A reward of <strong>${formatCurrency(amount)}</strong> has been locked for your hire on <strong>${jobTitle}</strong>.</p>`
   );
 }
 
@@ -74,7 +75,7 @@ export async function sendMilestoneReached(
   await send(
     referrerEmail,
     `Milestone payout: Day ${dayMark}`,
-    `<p>Your Day ${dayMark} retention milestone payout of <strong>$${amount}</strong> is being processed.</p>`
+    `<p>Your Day ${dayMark} retention milestone payout of <strong>${formatCurrency(amount)}</strong> is being processed.</p>`
   );
 }
 

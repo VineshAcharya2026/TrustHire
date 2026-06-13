@@ -107,7 +107,7 @@ export default function NewJobPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reward">Referral bounty ($)</Label>
+            <Label htmlFor="reward">Referral bounty (₹)</Label>
             <Input
               id="reward"
               type="number"

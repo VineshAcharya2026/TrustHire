@@ -7,7 +7,7 @@ import { ReferralTimeline } from "@/components/referrals/ReferralTimeline";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { ReferralStatus } from "@prisma/client";
-import { Calendar, DollarSign, Mail, Phone, User } from "lucide-react";
+import { Calendar, IndianRupee, Mail, Phone, User } from "lucide-react";
 
 type Referral = {
   id: string;
@@ -142,7 +142,7 @@ export default function EmployerReferralOverviewPage() {
           <InfoPanel title="Lead summary">
             <InfoRow label="Referrer" value={referrerName} icon={<User className="h-3.5 w-3.5" />} />
             <InfoRow label="Position" value={referral.job.title} />
-            <InfoRow label="Bounty" value={formatCurrency(referral.job.rewardAmount)} icon={<DollarSign className="h-3.5 w-3.5" />} />
+            <InfoRow label="Bounty" value={formatCurrency(referral.job.rewardAmount)} icon={<IndianRupee className="h-3.5 w-3.5" />} />
             <InfoRow label="Submitted" value={formatDate(referral.submittedAt)} icon={<Calendar className="h-3.5 w-3.5" />} />
           </InfoPanel>
         </div>

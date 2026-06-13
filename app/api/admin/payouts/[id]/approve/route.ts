@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { triggerMilestonePayout } from "@/lib/reward-engine";
-import { getClientIp } from "@/lib/utils";
+import { getClientIp, formatCurrency } from "@/lib/utils";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { notifyReferrerRewardReleased } from "@/lib/whatsapp";
@@ -26,7 +26,7 @@ export async function PATCH(
   if (full?.reward.referral.referrer) {
     await createNotification(
       full.reward.referral.referrer.id,
-      `Payout of $${full.amount} approved`,
+      `Payout of ${formatCurrency(full.amount)} approved`,
       "PAYOUT"
     );
     if (full.reward.referral.referrer.phone) {

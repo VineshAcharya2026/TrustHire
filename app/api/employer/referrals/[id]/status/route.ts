@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateReferralStatusSchema } from "@/lib/validators/referral";
 import { logAudit } from "@/lib/audit";
-import { getClientIp } from "@/lib/utils";
+import { getClientIp, formatCurrency } from "@/lib/utils";
 import { triggerRewardLock } from "@/lib/reward-engine";
 import { sendStatusUpdate, sendRewardLocked } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
@@ -62,7 +62,7 @@ export async function PATCH(
     await sendRewardLocked(existing.referrer.email, existing.job.rewardAmount, existing.job.title);
     await createNotification(
       existing.referrerId,
-      `Candidate hired! $${existing.job.rewardAmount} reward locked for ${existing.job.title}`,
+      `Candidate hired! ${formatCurrency(existing.job.rewardAmount)} reward locked for ${existing.job.title}`,
       "REWARD"
     );
     if (existing.referrer.phone) {

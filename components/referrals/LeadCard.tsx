@@ -3,7 +3,7 @@ import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { getInitials, getStatusProgress } from "@/lib/referral-utils";
 import { ReferralStatusBadge } from "@/components/referrals/StatusBadge";
 import type { ReferralStatus } from "@prisma/client";
-import { ArrowRight, Building2, Calendar, DollarSign, Mail, User } from "lucide-react";
+import { ArrowRight, Building2, Calendar, IndianRupee, Mail, User } from "lucide-react";
 
 export type LeadCardData = {
   id: string;
@@ -85,7 +85,7 @@ export function LeadCard({
 
             {showReward && lead.rewardAmount != null && (
               <p className="mt-3 inline-flex items-center gap-1 rounded-md bg-accent/15 px-2 py-1 text-xs font-semibold text-primary">
-                <DollarSign className="h-3 w-3 text-accent" />
+                <IndianRupee className="h-3 w-3 text-accent" />
                 Bounty {formatCurrency(lead.rewardAmount)}
               </p>
             )}

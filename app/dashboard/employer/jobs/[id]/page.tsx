@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { fetchJson, parseApiError } from "@/lib/api-utils";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { ReferralStatus } from "@prisma/client";
-import { Briefcase, Calendar, DollarSign, FileText, ToggleLeft, Users } from "lucide-react";
+import { Briefcase, Calendar, FileText, IndianRupee, ToggleLeft, Users } from "lucide-react";
 
 type Job = {
   id: string;
@@ -161,7 +161,7 @@ export default function JobOverviewPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Bounty ($)</Label>
+                  <Label>Bounty (₹)</Label>
                   <Input
                     type="number"
                     min={1}
@@ -220,7 +220,7 @@ export default function JobOverviewPage() {
 
         <div className="space-y-4">
           <InfoPanel title="Job summary">
-            <InfoRow label="Bounty" value={formatCurrency(job.rewardAmount)} icon={<DollarSign className="h-3.5 w-3.5" />} />
+            <InfoRow label="Bounty" value={formatCurrency(job.rewardAmount)} icon={<IndianRupee className="h-3.5 w-3.5" />} />
             <InfoRow label="Referrals" value={job.referrals.length} icon={<Users className="h-3.5 w-3.5" />} />
             <InfoRow label="Posted" value={formatDate(job.createdAt)} icon={<Calendar className="h-3.5 w-3.5" />} />
             <InfoRow label="Status" value={job.isActive ? "Accepting referrals" : "Closed"} icon={<FileText className="h-3.5 w-3.5" />} />

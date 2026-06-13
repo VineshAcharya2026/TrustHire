@@ -1,4 +1,5 @@
 import twilio from "twilio";
+import { formatCurrency } from "@/lib/utils";
 
 function getClient() {
   if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) return null;
@@ -23,12 +24,12 @@ export async function notifyReferrerHired(
 ) {
   await sendWhatsApp(
     phone,
-    `TrustHire: ${candidateName} was hired! Reward of $${amount} is now locked.`
+    `TrustHire: ${candidateName} was hired! Reward of ${formatCurrency(amount)} is now locked.`
   );
 }
 
 export async function notifyReferrerRewardReleased(phone: string, amount: number) {
-  await sendWhatsApp(phone, `TrustHire: $${amount} has been released to your account.`);
+  await sendWhatsApp(phone, `TrustHire: ${formatCurrency(amount)} has been released to your account.`);
 }
 
 export async function notifyEmployerMilestone(
