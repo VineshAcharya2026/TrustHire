@@ -12,10 +12,10 @@ export async function GET(request: Request) {
 
   const users = await prisma.user.findMany({
     where: {
-      ...(role ? { role: role as "ADMIN" | "EMPLOYER" | "REFERRER" } : {}),
+      ...(role ? { role: role as "ADMIN" | "EMPLOYER" | "REFERRER" | "MENTOR" | "MENTEE" } : {}),
       ...(status ? { status: status as "PENDING" | "ACTIVE" | "SUSPENDED" | "FROZEN" | "DELETED" } : {}),
     },
-    include: { profile: true, employer: true },
+    include: { profile: true, employer: true, mentorProfile: true, menteeProfile: true },
     orderBy: { createdAt: "desc" },
   });
 

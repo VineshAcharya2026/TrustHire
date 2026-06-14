@@ -54,3 +54,5 @@ console.log("\nDone! Demo logins:");
 console.log("  admin@trusthire.com / Password123!");
 console.log("  careers@acme.com / Password123!");
 console.log("  jane.doe@staffing.com / Password123!");
+console.log("  mentor@trusthire.com / Password123!");
+console.log("  mentee@trusthire.com / Password123!");

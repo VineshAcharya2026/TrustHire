@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { updateJobSchema } from "@/lib/validators/job";
 import { logAudit } from "@/lib/audit";
 import { getClientIp } from "@/lib/utils";
+import { parseSkillInput, syncJobSkills } from "@/lib/skills";
 
 async function getOwnJob(jobId: string, userId: string) {
   const employer = await prisma.employer.findUnique({ where: { userId } });
@@ -48,10 +49,18 @@ export async function PATCH(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
+  const { skills, requirements, ...jobData } = parsed.data;
+
   const updated = await prisma.job.update({
     where: { id: params.id },
-    data: parsed.data,
+    data: jobData,
   });
+
+  if (skills !== undefined) {
+    await syncJobSkills(params.id, parseSkillInput(skills));
+  } else if (requirements !== undefined) {
+    await syncJobSkills(params.id, parseSkillInput(requirements));
+  }
 
   await logAudit({
     userId: session.user.id,

@@ -38,11 +38,15 @@ function getNotificationHref(type: string, role?: string): string | null {
       if (role === "EMPLOYER") return "/dashboard/employer/referrals";
       if (role === "REFERRER") return "/dashboard/referrer/referrals";
       if (role === "ADMIN") return "/dashboard/admin/referrals";
+      if (role === "MENTOR") return "/dashboard/mentor";
+      if (role === "MENTEE") return "/dashboard/mentee";
       return null;
     case "ACCOUNT":
       if (role === "ADMIN") return "/dashboard/admin";
       if (role === "EMPLOYER") return "/dashboard/employer";
       if (role === "REFERRER") return "/dashboard/referrer";
+      if (role === "MENTOR") return "/dashboard/mentor";
+      if (role === "MENTEE") return "/dashboard/mentee";
       return null;
     default:
       return null;

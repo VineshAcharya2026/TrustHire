@@ -17,7 +17,8 @@ export default function NewJobPage() {
     title: "",
     description: "",
     requirements: "",
-    rewardAmount: 5000,
+    skills: "",
+    rewardAmount: 50000,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -106,8 +107,17 @@ export default function NewJobPage() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="reward">Referral bounty (₹)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="skills">Skills (comma-separated)</Label>
+              <Input
+                id="skills"
+                value={form.skills}
+                onChange={(e) => setForm({ ...form, skills: e.target.value })}
+                placeholder="React, TypeScript, Node.js"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reward">Referral bounty (₹)</Label>
             <Input
               id="reward"
               type="number"

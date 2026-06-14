@@ -6,6 +6,8 @@ const roleRoutes: Record<string, Role> = {
   "/dashboard/admin": "ADMIN",
   "/dashboard/employer": "EMPLOYER",
   "/dashboard/referrer": "REFERRER",
+  "/dashboard/mentor": "MENTOR",
+  "/dashboard/mentee": "MENTEE",
 };
 
 function dashboardForRole(role: Role): string {
@@ -16,6 +18,10 @@ function dashboardForRole(role: Role): string {
       return "/dashboard/employer";
     case "REFERRER":
       return "/dashboard/referrer";
+    case "MENTOR":
+      return "/dashboard/mentor";
+    case "MENTEE":
+      return "/dashboard/mentee";
     default:
       return "/login";
   }

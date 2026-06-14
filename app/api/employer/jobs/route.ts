@@ -4,8 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { createJobSchema } from "@/lib/validators/job";
 import { logAudit } from "@/lib/audit";
 import { getClientIp } from "@/lib/utils";
+import { parseSkillInput, syncJobSkills } from "@/lib/skills";
+import { buildJobWhere, parseJobFilters } from "@/lib/filters";
 
-export async function GET() {
+export async function GET(request: Request) {
   const { error, session } = await requireRole("EMPLOYER");
   if (error || !session) return error;
 
@@ -16,9 +18,15 @@ export async function GET() {
     return NextResponse.json({ error: "Employer profile not found" }, { status: 404 });
   }
 
+  const filters = parseJobFilters(new URL(request.url).searchParams);
   const jobs = await prisma.job.findMany({
-    where: { employerId: employer.id },
-    include: { _count: { select: { referrals: true } } },
+    where: {
+      AND: [{ employerId: employer.id }, buildJobWhere({ ...filters, activeOnly: false })],
+    },
+    include: {
+      _count: { select: { referrals: true } },
+      skills: { include: { skill: true } },
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -51,6 +59,12 @@ export async function POST(request: Request) {
       rewardAmount: parsed.data.rewardAmount,
     },
   });
+
+  const skillNames = [
+    ...parseSkillInput(parsed.data.skills),
+    ...parseSkillInput(parsed.data.requirements),
+  ];
+  await syncJobSkills(job.id, skillNames);
 
   await logAudit({
     userId: session.user.id,

@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LeadCard, LeadCardGrid, LeadCardSkeleton } from "@/components/referrals/LeadCard";
-import { PageHeader, FilterBar, EmptyState } from "@/components/layout/PageHeader";
+import { PageHeader, EmptyState } from "@/components/layout/PageHeader";
+import {
+  AdvancedFilterBar,
+  emptyFilters,
+  filtersToParams,
+  type AdvancedFilterValues,
+} from "@/components/layout/AdvancedFilterBar";
 import type { ReferralStatus } from "@prisma/client";
 
 type Referral = {
@@ -15,7 +21,7 @@ type Referral = {
   referrer?: { profile?: { firstName: string; lastName: string } };
 };
 
-const FILTERS = [
+const STATUS_OPTIONS = [
   { value: "", label: "All statuses" },
   { value: "SUBMITTED", label: "Submitted" },
   { value: "SHORTLISTED", label: "Shortlisted" },
@@ -27,28 +33,20 @@ const FILTERS = [
 export default function EmployerReferralsPage() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("");
+  const [filters, setFilters] = useState<AdvancedFilterValues>(emptyFilters);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    const params = filtersToParams(filters);
+    fetch(`/api/employer/referrals?${params.toString()}`)
+      .then((r) => r.json())
+      .then((data) => setReferrals(Array.isArray(data) ? data : []))
+      .finally(() => setLoading(false));
+  }, [filters]);
 
   useEffect(() => {
-    setLoading(true);
-    const q = filter ? `?status=${filter}` : "";
-    fetch(`/api/employer/referrals${q}`)
-      .then((r) => r.json())
-      .then(setReferrals)
-      .finally(() => setLoading(false));
-  }, [filter]);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    if (!q) return referrals;
-    return referrals.filter(
-      (r) =>
-        r.candidateName.toLowerCase().includes(q) ||
-        r.candidateEmail.toLowerCase().includes(q) ||
-        r.job.title.toLowerCase().includes(q)
-    );
-  }, [referrals, search]);
+    load();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -57,13 +55,21 @@ export default function EmployerReferralsPage() {
         description={`${referrals.length} referrals across your job postings`}
       />
 
-      <FilterBar
-        search={search}
-        onSearchChange={setSearch}
-        filter={filter}
-        onFilterChange={setFilter}
-        filterOptions={FILTERS}
-        placeholder="Search candidates or jobs..."
+      <AdvancedFilterBar
+        values={filters}
+        onChange={setFilters}
+        onApply={load}
+        onClear={() => {
+          setFilters(emptyFilters);
+          setLoading(true);
+          fetch("/api/employer/referrals")
+            .then((r) => r.json())
+            .then((data) => setReferrals(Array.isArray(data) ? data : []))
+            .finally(() => setLoading(false));
+        }}
+        searchPlaceholder="Search candidates, jobs, skills..."
+        showStatus
+        statusOptions={STATUS_OPTIONS}
       />
 
       {loading ? (
@@ -72,14 +78,14 @@ export default function EmployerReferralsPage() {
             <LeadCardSkeleton key={i} />
           ))}
         </LeadCardGrid>
-      ) : filtered.length === 0 ? (
+      ) : referrals.length === 0 ? (
         <EmptyState
-          title="No leads yet"
+          title="No leads found"
           description="Referrals will appear here when referrers submit candidates for your jobs."
         />
       ) : (
         <LeadCardGrid>
-          {filtered.map((r) => (
+          {referrals.map((r) => (
             <LeadCard
               key={r.id}
               showReferrer

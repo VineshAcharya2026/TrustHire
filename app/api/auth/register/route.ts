@@ -6,6 +6,7 @@ import { isBlacklisted } from "@/lib/blacklist";
 import { logAudit } from "@/lib/audit";
 import { getClientIp } from "@/lib/utils";
 import { sendAdminAlert } from "@/lib/email";
+import { parseSkillInput } from "@/lib/skills";
 
 export async function POST(request: Request) {
   try {
@@ -54,6 +55,28 @@ export async function POST(request: Request) {
                   create: {
                     companyName: data.companyName!,
                     website: data.website || undefined,
+                  },
+                },
+              }
+            : {}),
+          ...(data.role === "MENTOR"
+            ? {
+                mentorProfile: {
+                  create: {
+                    company: data.companyName,
+                    title: data.title,
+                    expertise: parseSkillInput(data.expertise),
+                  },
+                },
+              }
+            : {}),
+          ...(data.role === "MENTEE"
+            ? {
+                menteeProfile: {
+                  create: {
+                    currentRole: data.title,
+                    goals: data.goals,
+                    desiredSkills: parseSkillInput(data.desiredSkills),
                   },
                 },
               }

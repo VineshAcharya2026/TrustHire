@@ -1,14 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 import { JobCard } from "@/components/jobs/JobCard";
 import { EntityCardGrid } from "@/components/layout/OverviewHeader";
-import { EmptyState, FilterBar, PageHeader } from "@/components/layout/PageHeader";
+import { EmptyState, PageHeader } from "@/components/layout/PageHeader";
+import {
+  AdvancedFilterBar,
+  emptyFilters,
+  filtersToParams,
+  type AdvancedFilterValues,
+} from "@/components/layout/AdvancedFilterBar";
 import { LeadCardSkeleton } from "@/components/referrals/LeadCard";
-import { fetchJson } from "@/lib/api-utils";
 import { Plus } from "lucide-react";
 
 type Job = {
@@ -19,34 +24,41 @@ type Job = {
   _count: { referrals: number };
 };
 
+const JOB_STATUS_OPTIONS = [
+  { value: "", label: "All jobs" },
+  { value: "active", label: "Active" },
+  { value: "closed", label: "Closed" },
+];
+
 export default function EmployerJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [filters, setFilters] = useState<AdvancedFilterValues>(emptyFilters);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    setError("");
+    const params = filtersToParams(filters);
+    params.set("activeOnly", "false");
+    if (filters.status) params.set("jobStatus", filters.status);
+    fetch(`/api/employer/jobs?${params.toString()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+          setJobs([]);
+        } else {
+          setJobs(Array.isArray(data) ? data : []);
+        }
+      })
+      .catch(() => setError("Failed to load jobs"))
+      .finally(() => setLoading(false));
+  }, [filters]);
 
   useEffect(() => {
-    fetchJson<Job[]>("/api/employer/jobs").then(({ data, error: err }) => {
-      setLoading(false);
-      if (err) {
-        setError(err);
-        return;
-      }
-      setJobs(data ?? []);
-    });
+    load();
   }, []);
-
-  const filtered = useMemo(() => {
-    return jobs.filter((j) => {
-      const matchesSearch = j.title.toLowerCase().includes(search.toLowerCase());
-      const matchesFilter =
-        filter === "all" ||
-        (filter === "active" && j.isActive) ||
-        (filter === "closed" && !j.isActive);
-      return matchesSearch && matchesFilter;
-    });
-  }, [jobs, search, filter]);
 
   return (
     <div className="space-y-6">
@@ -65,17 +77,22 @@ export default function EmployerJobsPage() {
 
       {error && <Alert variant="error">{error}</Alert>}
 
-      <FilterBar
-        search={search}
-        onSearchChange={setSearch}
-        filter={filter}
-        onFilterChange={setFilter}
-        placeholder="Search jobs..."
-        filterOptions={[
-          { value: "all", label: "All jobs" },
-          { value: "active", label: "Active" },
-          { value: "closed", label: "Closed" },
-        ]}
+      <AdvancedFilterBar
+        values={filters}
+        onChange={setFilters}
+        onApply={load}
+        onClear={() => {
+          setFilters(emptyFilters);
+          setLoading(true);
+          fetch("/api/employer/jobs?activeOnly=false")
+            .then((r) => r.json())
+            .then((data) => setJobs(Array.isArray(data) ? data : []))
+            .catch(() => setError("Failed to load jobs"))
+            .finally(() => setLoading(false));
+        }}
+        searchPlaceholder="Search jobs, skills..."
+        showStatus
+        statusOptions={JOB_STATUS_OPTIONS}
       />
 
       {loading ? (
@@ -84,28 +101,22 @@ export default function EmployerJobsPage() {
             <LeadCardSkeleton key={i} />
           ))}
         </EntityCardGrid>
-      ) : filtered.length === 0 ? (
+      ) : jobs.length === 0 ? (
         <EmptyState
-          title={jobs.length === 0 ? "No jobs yet" : "No matching jobs"}
-          description={
-            jobs.length === 0
-              ? "Post your first role to start receiving referrals from trusted partners."
-              : "Try adjusting your search or filters."
-          }
+          title="No jobs found"
+          description="Post a role or adjust your filters."
           action={
-            jobs.length === 0 ? (
-              <Button variant="accent" asChild>
-                <Link href="/dashboard/employer/jobs/new">
-                  <Plus className="h-4 w-4" />
-                  Post a job
-                </Link>
-              </Button>
-            ) : undefined
+            <Button variant="accent" asChild>
+              <Link href="/dashboard/employer/jobs/new">
+                <Plus className="h-4 w-4" />
+                Post a job
+              </Link>
+            </Button>
           }
         />
       ) : (
         <EntityCardGrid>
-          {filtered.map((job) => (
+          {jobs.map((job) => (
             <JobCard
               key={job.id}
               job={{

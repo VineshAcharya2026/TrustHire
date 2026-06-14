@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { LeadCard, LeadCardGrid, LeadCardSkeleton } from "@/components/referrals/LeadCard";
-import { PageHeader, FilterBar, EmptyState } from "@/components/layout/PageHeader";
+import { PageHeader, EmptyState } from "@/components/layout/PageHeader";
+import {
+  AdvancedFilterBar,
+  emptyFilters,
+  filtersToParams,
+  type AdvancedFilterValues,
+} from "@/components/layout/AdvancedFilterBar";
 import { Button } from "@/components/ui/button";
 import type { ReferralStatus } from "@prisma/client";
 import { Plus } from "lucide-react";
@@ -17,10 +23,11 @@ type Referral = {
   job: { title: string; rewardAmount: number; employer: { companyName: string } };
 };
 
-const FILTERS = [
+const STATUS_OPTIONS = [
   { value: "", label: "All statuses" },
   { value: "SUBMITTED", label: "Submitted" },
   { value: "SHORTLISTED", label: "Shortlisted" },
+  { value: "INTERVIEW_SCHEDULED", label: "Interview scheduled" },
   { value: "HIRED", label: "Hired" },
   { value: "REJECTED", label: "Rejected" },
 ];
@@ -28,29 +35,20 @@ const FILTERS = [
 export default function ReferrerReferralsPage() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("");
+  const [filters, setFilters] = useState<AdvancedFilterValues>(emptyFilters);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    const params = filtersToParams(filters);
+    fetch(`/api/referrer/referrals?${params.toString()}`)
+      .then((r) => r.json())
+      .then((data) => setReferrals(Array.isArray(data) ? data : []))
+      .finally(() => setLoading(false));
+  }, [filters]);
 
   useEffect(() => {
-    setLoading(true);
-    fetch("/api/referrer/referrals")
-      .then((r) => r.json())
-      .then(setReferrals)
-      .finally(() => setLoading(false));
+    load();
   }, []);
-
-  const filtered = useMemo(() => {
-    return referrals.filter((r) => {
-      const matchFilter = !filter || r.status === filter;
-      const q = search.toLowerCase();
-      const matchSearch =
-        !q ||
-        r.candidateName.toLowerCase().includes(q) ||
-        r.job.title.toLowerCase().includes(q) ||
-        r.job.employer.companyName.toLowerCase().includes(q);
-      return matchFilter && matchSearch;
-    });
-  }, [referrals, search, filter]);
 
   return (
     <div className="space-y-6">
@@ -58,7 +56,7 @@ export default function ReferrerReferralsPage() {
         title="My leads"
         description={`${referrals.length} candidates you've referred`}
         actions={
-          <Button variant="accent" asChild className="hover-lift">
+          <Button variant="accent" asChild>
             <Link href="/dashboard/referrer/referrals/new">
               <Plus className="h-4 w-4" /> Submit referral
             </Link>
@@ -66,13 +64,21 @@ export default function ReferrerReferralsPage() {
         }
       />
 
-      <FilterBar
-        search={search}
-        onSearchChange={setSearch}
-        filter={filter}
-        onFilterChange={setFilter}
-        filterOptions={FILTERS}
-        placeholder="Search by candidate, job, or company..."
+      <AdvancedFilterBar
+        values={filters}
+        onChange={setFilters}
+        onApply={load}
+        onClear={() => {
+          setFilters(emptyFilters);
+          setTimeout(() => {
+            fetch("/api/referrer/referrals")
+              .then((r) => r.json())
+              .then((data) => setReferrals(Array.isArray(data) ? data : []));
+          }, 0);
+        }}
+        searchPlaceholder="Search candidate, job, company, skills..."
+        showStatus
+        statusOptions={STATUS_OPTIONS}
       />
 
       {loading ? (
@@ -81,22 +87,13 @@ export default function ReferrerReferralsPage() {
             <LeadCardSkeleton key={i} />
           ))}
         </LeadCardGrid>
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          title="No referrals yet"
-          description="Submit your first candidate to start earning bounties."
-          action={
-            <Button variant="accent" asChild>
-              <Link href="/dashboard/referrer/referrals/new">Submit referral</Link>
-            </Button>
-          }
-        />
+      ) : referrals.length === 0 ? (
+        <EmptyState title="No leads found" description="Adjust filters or submit your first referral." />
       ) : (
         <LeadCardGrid>
-          {filtered.map((r) => (
+          {referrals.map((r) => (
             <LeadCard
               key={r.id}
-              showReward
               lead={{
                 id: r.id,
                 candidateName: r.candidateName,
@@ -108,6 +105,7 @@ export default function ReferrerReferralsPage() {
                 rewardAmount: r.job.rewardAmount,
                 href: `/dashboard/referrer/referrals/${r.id}`,
               }}
+              showReward
             />
           ))}
         </LeadCardGrid>

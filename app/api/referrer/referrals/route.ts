@@ -9,14 +9,17 @@ import { getClientIp } from "@/lib/utils";
 import { sendReferralConfirmation } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
 
-export async function GET() {
+import { buildReferralWhere, parseReferralFilters } from "@/lib/filters";
+
+export async function GET(request: Request) {
   const { error, session } = await requireRole("REFERRER");
   if (error || !session) return error;
 
+  const filters = parseReferralFilters(new URL(request.url).searchParams);
   const referrals = await prisma.referral.findMany({
-    where: { referrerId: session.user.id },
+    where: { referrerId: session.user.id, ...buildReferralWhere(filters) },
     include: {
-      job: { include: { employer: true } },
+      job: { include: { employer: true, skills: { include: { skill: true } } } },
       reward: { include: { payouts: true } },
       milestones: true,
     },

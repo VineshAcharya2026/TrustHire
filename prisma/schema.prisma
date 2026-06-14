@@ -8,25 +8,31 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(cuid())
-  email         String     @unique
-  phone         String?    @unique
-  passwordHash  String
-  role          Role       @default(REFERRER)
-  status        UserStatus @default(PENDING)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  profile       Profile?
-  employer      Employer?
-  referrals     Referral[]
-  auditLogs     AuditLog[]
-  notifications Notification[]
+  id               String         @id @default(cuid())
+  email            String         @unique
+  phone            String?        @unique
+  passwordHash     String
+  role             Role           @default(REFERRER)
+  status           UserStatus     @default(PENDING)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  profile          Profile?
+  employer         Employer?
+  mentorProfile    MentorProfile?
+  menteeProfile    MenteeProfile?
+  referrals        Referral[]
+  auditLogs        AuditLog[]
+  notifications    Notification[]
+  mentorSessions   Mentorship[]   @relation("MentorUser")
+  menteeSessions   Mentorship[]   @relation("MenteeUser")
 }
 
 enum Role {
   ADMIN
   EMPLOYER
   REFERRER
+  MENTOR
+  MENTEE
   CANDIDATE
 }
 
@@ -36,6 +42,13 @@ enum UserStatus {
   SUSPENDED
   FROZEN
   DELETED
+}
+
+enum MentorshipStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  REJECTED
 }
 
 model Profile {
@@ -48,6 +61,40 @@ model Profile {
   bio       String?
 }
 
+model MentorProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company    String?
+  title      String?
+  expertise  String[]
+  yearsExp   Int?
+  maxMentees Int      @default(5)
+}
+
+model MenteeProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentRole   String?
+  goals         String?
+  desiredSkills String[]
+}
+
+model Mentorship {
+  id        String           @id @default(cuid())
+  mentorId  String
+  menteeId  String
+  mentor    User             @relation("MentorUser", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee    User             @relation("MenteeUser", fields: [menteeId], references: [id], onDelete: Cascade)
+  status    MentorshipStatus @default(PENDING)
+  message   String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([mentorId, menteeId])
+}
+
 model Employer {
   id          String  @id @default(cuid())
   userId      String  @unique
@@ -56,6 +103,21 @@ model Employer {
   website     String?
   verified    Boolean @default(false)
   jobs        Job[]
+}
+
+model Skill {
+  id   String     @id @default(cuid())
+  name String     @unique
+  jobs JobSkill[]
+}
+
+model JobSkill {
+  jobId   String
+  skillId String
+  job     Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([jobId, skillId])
 }
 
 model Job {
@@ -69,6 +131,7 @@ model Job {
   isActive     Boolean    @default(true)
   createdAt    DateTime   @default(now())
   referrals    Referral[]
+  skills       JobSkill[]
 }
 
 model Referral {

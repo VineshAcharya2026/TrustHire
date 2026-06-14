@@ -45,6 +45,10 @@ export function dashboardPathForRole(role: Role): string {
       return "/dashboard/employer";
     case "REFERRER":
       return "/dashboard/referrer";
+    case "MENTOR":
+      return "/dashboard/mentor";
+    case "MENTEE":
+      return "/dashboard/mentee";
     default:
       return "/login";
   }
