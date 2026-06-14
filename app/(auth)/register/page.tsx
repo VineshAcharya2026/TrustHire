@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,8 +18,32 @@ const ROLES: { id: RegisterRole; label: string }[] = [
   { id: "MENTEE", label: "Mentee" },
 ];
 
+const VALID_ROLES: RegisterRole[] = ["REFERRER", "EMPLOYER", "MENTOR", "MENTEE"];
+
+function parseRoleParam(value: string | null): RegisterRole {
+  if (value && VALID_ROLES.includes(value as RegisterRole)) {
+    return value as RegisterRole;
+  }
+  return "REFERRER";
+}
+
 export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen auth-bg items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [role, setRole] = useState<RegisterRole>("REFERRER");
   const [form, setForm] = useState({
     firstName: "",
@@ -36,6 +60,10 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setRole(parseRoleParam(searchParams.get("role")));
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
