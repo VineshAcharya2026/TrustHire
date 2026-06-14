@@ -1,13 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { ROLE_PLANS, getRolePlan, type RolePlanId } from "@/components/home/rolePlans";
+import { ROLE_PLANS, getRolePlan, type RolePlan, type RolePlanId } from "@/components/home/rolePlans";
 import { RolePlanCard } from "@/components/home/RolePlanCard";
 import { RolePlanModal } from "@/components/home/RolePlanModal";
 
 export function RolePlanSection() {
-  const [selectedId, setSelectedId] = useState<RolePlanId | null>(null);
-  const selectedPlan = selectedId ? getRolePlan(selectedId) ?? null : null;
+  const [open, setOpen] = useState(false);
+  const [activePlan, setActivePlan] = useState<RolePlan | null>(null);
+
+  function handleOpen(id: RolePlanId) {
+    const plan = getRolePlan(id);
+    if (!plan) return;
+    setActivePlan(plan);
+    setOpen(true);
+  }
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      window.setTimeout(() => setActivePlan(null), 200);
+    }
+  }
 
   return (
     <section id="plans" className="border-t border-primary/8 bg-white/50 py-20">
@@ -31,18 +45,12 @@ export function RolePlanSection() {
               key={plan.id}
               plan={plan}
               index={index}
-              onOpen={setSelectedId}
+              onOpen={handleOpen}
             />
           ))}
         </div>
 
-        <RolePlanModal
-          plan={selectedPlan}
-          open={!!selectedId}
-          onOpenChange={(open) => {
-            if (!open) setSelectedId(null);
-          }}
-        />
+        <RolePlanModal plan={activePlan} open={open} onOpenChange={handleOpenChange} />
       </div>
     </section>
   );
