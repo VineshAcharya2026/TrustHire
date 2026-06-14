@@ -46,7 +46,7 @@ export const ROLE_PLANS: RolePlan[] = [
     pricingNote:
       "You set the referral bounty per role. Platform admin handles milestone verification and payout release.",
     icon: Briefcase,
-    accentClass: "from-primary/80 to-primary",
+    accentClass: "from-landing-orange to-landing-orangeDark",
   },
   {
     id: "REFERRER",
@@ -72,7 +72,7 @@ export const ROLE_PLANS: RolePlan[] = [
     pricingNote:
       "Rewards are set per job by the employer. You earn in INR when admin confirms retention milestones.",
     icon: Award,
-    accentClass: "from-accent to-amber-400",
+    accentClass: "from-landing-orangeDark to-landing-orange",
   },
   {
     id: "MENTOR",
@@ -97,7 +97,7 @@ export const ROLE_PLANS: RolePlan[] = [
     ],
     pricingNote: "Mentorship is free to join. Focus on impact — no referral bounty required to mentor.",
     icon: GraduationCap,
-    accentClass: "from-emerald-600 to-teal-500",
+    accentClass: "from-landing-orange to-amber-500",
   },
   {
     id: "MENTEE",
@@ -122,7 +122,7 @@ export const ROLE_PLANS: RolePlan[] = [
     ],
     pricingNote: "Free to join. Mentorship helps you navigate the referral hiring ecosystem.",
     icon: Target,
-    accentClass: "from-violet-600 to-indigo-500",
+    accentClass: "from-amber-500 to-landing-orange",
   },
 ];
 

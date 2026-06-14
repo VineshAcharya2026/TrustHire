@@ -63,6 +63,12 @@ function RegisterForm() {
 
   useEffect(() => {
     setRole(parseRoleParam(searchParams.get("role")));
+    setForm((prev) => ({
+      ...prev,
+      firstName: searchParams.get("firstName")?.trim() || prev.firstName,
+      lastName: searchParams.get("lastName")?.trim() || prev.lastName,
+      email: searchParams.get("email")?.trim() || prev.email,
+    }));
   }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {

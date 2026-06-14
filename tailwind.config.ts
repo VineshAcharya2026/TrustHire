@@ -35,6 +35,12 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        landing: {
+          orange: "#F58220",
+          orangeDark: "#E06A00",
+          orangeLight: "#FFF4EB",
+          navy: "#1A1A2E",
+        },
       },
       borderRadius: {
         lg: "8px",

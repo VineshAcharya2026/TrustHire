@@ -24,18 +24,18 @@ export function RolePlanSection() {
   }
 
   return (
-    <section id="plans" className="border-t border-primary/8 bg-white/50 py-20">
+    <section id="plans" className="py-16 md:py-20">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-12 text-center animate-fade-in">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-accent">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-landing-orange">
             Choose your path
           </p>
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">
-            One platform. Four ways to grow.
+          <h2 className="text-3xl font-bold text-landing-navy md:text-4xl">
+            One platform.{" "}
+            <span className="text-landing-orange">Four ways to grow.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted">
-            Whether you hire, refer, mentor, or learn — click a plan to see full details,
-            then join in minutes.
+            Click a role to see full details — then join in minutes.
           </p>
         </div>
 
