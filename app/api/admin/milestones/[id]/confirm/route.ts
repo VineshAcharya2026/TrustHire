@@ -2,15 +2,14 @@ import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { confirmMilestone } from "@/lib/reward-engine";
-import { getClientIp } from "@/lib/utils";
-import { sendRetentionReminder } from "@/lib/email";
+import { getClientIp, formatCurrency } from "@/lib/utils";
 import { createNotification } from "@/lib/notifications";
 
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { error, session } = await requireRole("EMPLOYER");
+  const { error, session } = await requireRole("ADMIN");
   if (error || !session) return error;
 
   const milestone = await prisma.retentionMilestone.findUnique({
@@ -18,23 +17,34 @@ export async function POST(
     include: {
       referral: {
         include: {
-          job: { include: { employer: { include: { user: true } } } },
+          reward: true,
+          referrer: true,
         },
       },
     },
   });
 
-  if (!milestone || milestone.referral.job.employer.userId !== session.user.id) {
+  if (!milestone) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const updated = await confirmMilestone(params.id, session.user.id, getClientIp(request));
+  if (milestone.confirmed) {
+    return NextResponse.json({ error: "Milestone already confirmed" }, { status: 400 });
+  }
 
-  const admins = await prisma.user.findMany({ where: { role: "ADMIN", status: "ACTIVE" } });
-  for (const admin of admins) {
+  const updated = await confirmMilestone(params.id, session.user.id, getClientIp(request));
+  if (!updated) {
+    return NextResponse.json({ error: "Could not confirm milestone" }, { status: 400 });
+  }
+
+  const amount =
+    milestone.referral.reward &&
+    (milestone.referral.reward.totalAmount * milestone.percentage) / 100;
+
+  if (milestone.referral.referrerId && amount) {
     await createNotification(
-      admin.id,
-      `Milestone Day ${milestone.dayMark} confirmed for ${milestone.referral.candidateName} — payout pending`,
+      milestone.referral.referrerId,
+      `Day ${milestone.dayMark} milestone confirmed — ${formatCurrency(amount)} payout queued`,
       "PAYOUT"
     );
   }

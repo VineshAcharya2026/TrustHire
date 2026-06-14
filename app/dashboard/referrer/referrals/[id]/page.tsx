@@ -59,6 +59,7 @@ export default function ReferrerReferralOverviewPage() {
 
   const milestones = referral.milestones ?? [];
   const payouts = referral.reward?.payouts ?? [];
+  const bountyTotal = referral.reward?.totalAmount ?? referral.job.rewardAmount;
 
   return (
     <div className="space-y-6">
@@ -95,19 +96,22 @@ export default function ReferrerReferralOverviewPage() {
               {milestones.length > 0 && (
                 <div className="mt-4 space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted">Milestones</p>
-                  {milestones.map((m) => (
+                  {milestones.map((m) => {
+                    const amount = (bountyTotal * m.percentage) / 100;
+                    return (
                     <div
                       key={m.dayMark}
                       className="flex items-center justify-between rounded-md border border-primary/8 px-3 py-2 text-sm transition-colors hover:bg-surface"
                     >
                       <span>
-                        Day {m.dayMark} ({m.percentage}%)
+                        Day {m.dayMark} · {formatCurrency(amount)} ({m.percentage}%)
                       </span>
                       <span className={m.confirmed ? "font-medium text-success" : "text-muted"}>
                         {m.confirmed ? "Confirmed" : "Pending"}
                       </span>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
               {payouts.length > 0 && (

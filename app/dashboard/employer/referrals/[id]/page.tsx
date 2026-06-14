@@ -19,7 +19,6 @@ type Referral = {
   submittedAt: string;
   job: { title: string; rewardAmount: number };
   referrer: { profile?: { firstName: string; lastName: string } };
-  milestones: { id: string; dayMark: number; percentage: number; confirmed: boolean }[];
 };
 
 const NEXT: Partial<Record<ReferralStatus, ReferralStatus>> = {
@@ -40,7 +39,9 @@ export default function EmployerReferralOverviewPage() {
       .then(setReferral);
   };
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => {
+    load();
+  }, [id]);
 
   async function advance() {
     if (!referral) return;
@@ -51,11 +52,6 @@ export default function EmployerReferralOverviewPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: next }),
     });
-    load();
-  }
-
-  async function confirmMilestone(milestoneId: string) {
-    await fetch(`/api/employer/milestones/${milestoneId}/confirm`, { method: "POST" });
     load();
   }
 
@@ -96,31 +92,6 @@ export default function EmployerReferralOverviewPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <ReferralTimeline currentStatus={referral.status} />
-
-          {referral.milestones?.length > 0 && (
-            <InfoPanel title="Retention milestones">
-              {referral.milestones.map((m) => (
-                <div
-                  key={m.id}
-                  className="flex items-center justify-between border-b border-primary/5 py-3 last:border-0"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-primary">Day {m.dayMark}</p>
-                    <p className="text-xs text-muted">{m.percentage}% of bounty</p>
-                  </div>
-                  {m.confirmed ? (
-                    <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-success">
-                      Confirmed
-                    </span>
-                  ) : (
-                    <Button size="sm" variant="outline" onClick={() => confirmMilestone(m.id)}>
-                      Confirm
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </InfoPanel>
-          )}
         </div>
 
         <div className="space-y-6">

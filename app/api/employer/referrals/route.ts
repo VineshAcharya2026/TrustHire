@@ -25,7 +25,6 @@ export async function GET(request: Request) {
       job: true,
       referrer: { include: { profile: true } },
       reward: { include: { payouts: true } },
-      milestones: true,
     },
     orderBy: { submittedAt: "desc" },
   });

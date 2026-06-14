@@ -106,14 +106,23 @@ export default function RewardOverviewPage() {
           )}
 
           <InfoPanel title="Retention milestones">
-            {reward.referral.milestones.map((m) => (
-              <InfoRow
-                key={m.dayMark}
-                label={`Day ${m.dayMark} (${m.percentage}%)`}
-                value={m.confirmed ? `Confirmed ${m.confirmedAt ? formatDate(m.confirmedAt) : ""}` : "Pending"}
-                icon={<Calendar className="h-3.5 w-3.5" />}
-              />
-            ))}
+            {[...reward.referral.milestones]
+              .sort((a, b) => a.dayMark - b.dayMark)
+              .map((m) => {
+                const amount = (reward.totalAmount * m.percentage) / 100;
+                return (
+                  <InfoRow
+                    key={m.dayMark}
+                    label={`Day ${m.dayMark} · ${formatCurrency(amount)}`}
+                    value={
+                      m.confirmed
+                        ? `Confirmed${m.confirmedAt ? ` · ${formatDate(m.confirmedAt)}` : ""}`
+                        : "Pending verification"
+                    }
+                    icon={<Calendar className="h-3.5 w-3.5" />}
+                  />
+                );
+              })}
           </InfoPanel>
         </div>
 

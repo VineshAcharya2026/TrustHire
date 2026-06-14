@@ -47,7 +47,7 @@ export async function triggerRewardLock(referralId: string, adminOrUserId?: stri
   return reward;
 }
 
-export async function confirmMilestone(milestoneId: string, employerUserId: string, ip?: string) {
+export async function confirmMilestone(milestoneId: string, userId: string, ip?: string) {
   const milestone = await prisma.retentionMilestone.findUnique({
     where: { id: milestoneId },
     include: { referral: { include: { reward: true, job: true } } },
@@ -71,7 +71,7 @@ export async function confirmMilestone(milestoneId: string, employerUserId: stri
   });
 
   await logAudit({
-    userId: employerUserId,
+    userId: userId,
     action: "MILESTONE_CONFIRMED",
     entity: "RetentionMilestone",
     entityId: milestoneId,
