@@ -71,7 +71,7 @@ export default function LoginPage() {
       <div className="hidden flex-1 flex-col justify-between p-12 text-white lg:flex">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent shadow-card">
-            <Briefcase className="h-5 w-5 text-primary" />
+            <Briefcase className="h-5 w-5 text-white" />
           </div>
           <span className="text-xl font-bold tracking-tight">TrustHire</span>
         </div>
@@ -103,8 +103,8 @@ export default function LoginPage() {
         <div className="w-full max-w-md animate-fade-in">
           <div className="mb-8 lg:hidden">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                <Briefcase className="h-4 w-4 text-accent" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent">
+                <Briefcase className="h-4 w-4 text-white" />
               </div>
               <span className="font-bold text-primary">TrustHire</span>
             </div>
