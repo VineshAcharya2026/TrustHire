@@ -62,8 +62,6 @@ export default function LoginPage() {
       ADMIN: "/dashboard/admin",
       EMPLOYER: "/dashboard/employer",
       REFERRER: "/dashboard/referrer",
-      MENTOR: "/dashboard/mentor",
-      MENTEE: "/dashboard/mentee",
     };
     router.push(paths[role] || "/");
   }

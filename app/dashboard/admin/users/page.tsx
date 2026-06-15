@@ -97,8 +97,6 @@ export default function AdminUsersPage() {
           { value: "ADMIN", label: "Admin" },
           { value: "EMPLOYER", label: "Employer" },
           { value: "REFERRER", label: "Referrer" },
-          { value: "MENTOR", label: "Mentor" },
-          { value: "MENTEE", label: "Mentee" },
         ].map((opt) => (
           <button
             key={opt.value || "all"}

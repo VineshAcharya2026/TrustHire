@@ -26,7 +26,7 @@ export function BenefitsSection() {
           </h2>
           <p className="mt-4 text-muted">
             A complete referral hiring platform built for Indian businesses — with
-            mentorship, milestone payouts, and admin-backed trust.
+            milestone payouts and admin-backed trust.
           </p>
         </div>
 

@@ -32,10 +32,6 @@ export const BENEFITS: { text: string; highlight?: string }[] = [
     highlight: "Full referral lifecycle",
   },
   {
-    text: "Mentor and Mentee matching with skill-based search and career goal tracking.",
-    highlight: "Mentor and Mentee matching",
-  },
-  {
     text: "Advanced filters across jobs and referrals — company, role, skills, and bounty range.",
     highlight: "Advanced filters",
   },
@@ -44,7 +40,7 @@ export const BENEFITS: { text: string; highlight?: string }[] = [
     highlight: "Real-time notifications",
   },
   {
-    text: "Platform admin oversees payouts, disputes, mentorships, and audit logs.",
+    text: "Platform admin oversees payouts, disputes, and audit logs.",
     highlight: "Platform admin",
   },
 ];
@@ -54,7 +50,7 @@ export const HOW_IT_WORKS_STEPS = [
     step: 1,
     title: "Register & get approved",
     description:
-      "Create your free account as a Referrer, Employer, Mentor, or Mentee. Admin reviews and activates your profile.",
+      "Create your free account as a Referrer or Employer. Admin reviews and activates your profile.",
   },
   {
     step: 2,
@@ -74,7 +70,7 @@ export const FAQ_ITEMS: { question: string; answer: string }[] = [
   {
     question: "Who can join TrustHire?",
     answer:
-      "Employers post jobs and review candidates. Referrers submit leads and earn bounties. Mentors guide mentees. Mentees find mentors and explore careers. Admin manages the platform.",
+      "Employers post jobs and review candidates. Referrers submit leads and earn bounties. Platform admin manages approvals and payouts.",
   },
   {
     question: "How does account approval work?",
@@ -97,19 +93,14 @@ export const FAQ_ITEMS: { question: string; answer: string }[] = [
       "No. Milestone confirmation and payout release are managed by platform admin only. Employers focus on reviewing candidates and updating hire status.",
   },
   {
-    question: "How does mentorship work?",
-    answer:
-      "Mentors build profiles with expertise skills. Mentees search by company and skills, send requests, and track goals. Mentors accept or reject requests; admin oversees all relationships.",
-  },
-  {
     question: "What filters are available for jobs?",
     answer:
-      "Search by keyword, company, job title, skills, status, and bounty range (min/max in ₹). Filters work on job browse pages for referrers, mentors, and mentees.",
+      "Search by keyword, company, job title, skills, status, and bounty range (min/max in ₹). Filters work on job browse and referral list pages.",
   },
   {
     question: "Is TrustHire free to join?",
     answer:
-      "Yes. Registration is free for all roles. Referrers earn when placements succeed. Employers set bounties per role. Mentorship is free for mentors and mentees.",
+      "Yes. Registration is free. Referrers earn when placements succeed. Employers set bounties per role.",
   },
   {
     question: "What currency does TrustHire use?",
@@ -126,8 +117,6 @@ export const FAQ_ITEMS: { question: string; answer: string }[] = [
 export const QUICK_START_ROLES: { value: RolePlanId; label: string }[] = [
   { value: "REFERRER", label: "Referrer — earn on hires" },
   { value: "EMPLOYER", label: "Employer — post jobs" },
-  { value: "MENTOR", label: "Mentor — guide talent" },
-  { value: "MENTEE", label: "Mentee — find mentors" },
 ];
 
 export const FOOTER_LINKS = {

@@ -32,14 +32,14 @@ export function RolePlanSection() {
           </p>
           <h2 className="text-3xl font-bold text-landing-navy md:text-4xl">
             One platform.{" "}
-            <span className="text-landing-orange">Four ways to grow.</span>
+            <span className="text-landing-orange">Two ways to grow.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted">
             Click a role to see full details — then join in minutes.
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
           {ROLE_PLANS.map((plan, index) => (
             <RolePlanCard
               key={plan.id}

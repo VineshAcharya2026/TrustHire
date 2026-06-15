@@ -6,8 +6,6 @@ const roleRoutes: Record<string, Role> = {
   "/dashboard/admin": "ADMIN",
   "/dashboard/employer": "EMPLOYER",
   "/dashboard/referrer": "REFERRER",
-  "/dashboard/mentor": "MENTOR",
-  "/dashboard/mentee": "MENTEE",
 };
 
 function dashboardForRole(role: Role): string {
@@ -18,12 +16,8 @@ function dashboardForRole(role: Role): string {
       return "/dashboard/employer";
     case "REFERRER":
       return "/dashboard/referrer";
-    case "MENTOR":
-      return "/dashboard/mentor";
-    case "MENTEE":
-      return "/dashboard/mentee";
     default:
-      return "/login";
+      return "/";
   }
 }
 
@@ -31,6 +25,10 @@ export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
+
+    if (path.startsWith("/dashboard/mentor") || path.startsWith("/dashboard/mentee")) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
 
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));

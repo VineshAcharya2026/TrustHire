@@ -19,8 +19,8 @@ export function LandingHero() {
             Earn up to {formatCurrency(EXAMPLE_BOUNTY)} per successful hire!
           </p>
           <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/90 md:text-base">
-            TrustHire connects employers, referrers, mentors, and mentees — with
-            milestone-based INR rewards, mentorship, and full lifecycle tracking.
+            TrustHire connects employers and referrers — with milestone-based INR
+            rewards and full lifecycle tracking.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
             <Link
@@ -46,7 +46,7 @@ export function LandingHero() {
                   <Users className="h-12 w-12 text-white" />
                 </div>
                 <p className="text-lg font-semibold text-white">Trusted hiring network</p>
-                <p className="mt-1 text-sm text-white/80">Employers · Referrers · Mentors</p>
+                <p className="mt-1 text-sm text-white/80">Employers · Referrers</p>
               </div>
             </div>
           </div>
