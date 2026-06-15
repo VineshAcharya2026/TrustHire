@@ -11,7 +11,7 @@ export function OverviewHeader({
   backLabel = "Back",
   icon,
   actions,
-  accent = "from-primary via-accent to-primary/30",
+  accent = "from-accent via-accent/80 to-accent/20",
 }: {
   title: string;
   subtitle?: string;
@@ -36,7 +36,7 @@ export function OverviewHeader({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             {icon && (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-primary text-accent shadow-card">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-accent text-white shadow-card">
                 {icon}
               </div>
             )}

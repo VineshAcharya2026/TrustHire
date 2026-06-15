@@ -14,8 +14,8 @@ export function Sidebar({ items, title }: { items: NavItem[]; title: string }) {
   return (
     <aside className="hidden lg:flex w-64 flex-col border-r border-primary/8 bg-white/80 shadow-subtle backdrop-blur-sm">
       <div className="flex h-16 items-center gap-3 border-b border-primary/8 px-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-card">
-          <Briefcase className="h-4 w-4 text-accent" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-card">
+          <Briefcase className="h-4 w-4 text-white" />
         </div>
         <div>
           <p className="text-sm font-bold tracking-tight text-primary">TrustHire</p>
@@ -33,11 +33,11 @@ export function Sidebar({ items, title }: { items: NavItem[]; title: string }) {
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 active
-                  ? "bg-primary text-white shadow-card"
-                  : "text-muted hover:bg-surface hover:text-primary hover:translate-x-0.5"
+                  ? "bg-accent text-white shadow-card"
+                  : "text-muted hover:bg-accent/5 hover:text-accent hover:translate-x-0.5"
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active && "text-accent")} />
+              <Icon className={cn("h-4 w-4 shrink-0", active && "text-white")} />
               {item.label}
             </Link>
           );

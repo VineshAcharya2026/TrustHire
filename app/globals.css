@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 40 20% 97%;
-    --foreground: 240 28% 14%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 240 28% 14%;
-    --border: 240 10% 90%;
-    --input: 240 10% 90%;
-    --ring: 43 78% 60%;
+    --card-foreground: 222 47% 11%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
   }
 
   * {
@@ -33,18 +33,18 @@
   }
 
   .dashboard-bg {
-    background-color: #F8F7F4;
+    background-color: #F8FAFC;
     background-image:
-      radial-gradient(at 0% 0%, rgb(232 184 75 / 0.08) 0, transparent 50%),
-      radial-gradient(at 100% 100%, rgb(26 26 46 / 0.04) 0, transparent 50%);
+      radial-gradient(at 0% 0%, rgb(37 99 235 / 0.07) 0, transparent 50%),
+      radial-gradient(at 100% 100%, rgb(15 23 42 / 0.04) 0, transparent 50%);
   }
 
   .auth-bg {
-    background-color: #1A1A2E;
+    background-color: #0F172A;
     background-image:
-      radial-gradient(at 20% 20%, rgb(232 184 75 / 0.15) 0, transparent 40%),
-      radial-gradient(at 80% 80%, rgb(232 184 75 / 0.08) 0, transparent 40%),
-      linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #1A1A2E 100%);
+      radial-gradient(at 20% 20%, rgb(37 99 235 / 0.25) 0, transparent 40%),
+      radial-gradient(at 80% 80%, rgb(59 130 246 / 0.12) 0, transparent 40%),
+      linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #0F172A 100%);
   }
 
   .landing-hero-gradient {

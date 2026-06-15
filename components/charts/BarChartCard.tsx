@@ -23,17 +23,17 @@ export function BarChartCard({
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1A1A2E10" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#2563EB15" />
               <XAxis dataKey={nameKey} tick={{ fontSize: 12 }} stroke="#6B7280" />
               <YAxis tick={{ fontSize: 12 }} stroke="#6B7280" />
               <Tooltip
                 contentStyle={{
                   borderRadius: 8,
-                  border: "1px solid #1A1A2E15",
-                  boxShadow: "0 2px 8px rgb(26 26 46 / 0.08)",
+                  border: "1px solid #2563EB20",
+                  boxShadow: "0 2px 8px rgb(37 99 235 / 0.1)",
                 }}
               />
-              <Bar dataKey={dataKey} fill="#E8B84B" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={dataKey} fill="#2563EB" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -37,8 +37,8 @@ export function ReferralTimeline({ currentStatus }: { currentStatus: ReferralSta
                 <div
                   className={cn(
                     "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300",
-                    done && "border-accent bg-accent text-primary",
-                    active && "border-primary bg-primary text-white shadow-card",
+                    done && "border-accent bg-accent text-white",
+                    active && "border-accent bg-accent text-white shadow-card ring-4 ring-accent/20",
                     !done && !active && "border-primary/15 bg-white text-muted"
                   )}
                 >

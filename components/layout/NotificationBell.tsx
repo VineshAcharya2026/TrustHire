@@ -135,7 +135,7 @@ export function NotificationBell() {
       >
         <Bell className="h-5 w-5 text-primary" />
         {unread > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-primary">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
             {unread}
           </span>
         )}
@@ -181,7 +181,7 @@ export function NotificationBell() {
                       <div
                         className={cn(
                           "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md",
-                          n.read ? "bg-primary/5 text-primary/40" : "bg-accent/20 text-primary"
+                          n.read ? "bg-primary/5 text-primary/40" : "bg-accent/15 text-accent"
                         )}
                       >
                         <Icon className="h-4 w-4" />
