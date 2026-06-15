@@ -9,7 +9,7 @@ function BenefitText({ text, highlight }: { text: string; highlight?: string }) 
   return (
     <span>
       {before}
-      <strong className="font-semibold text-landing-orange">{highlight}</strong>
+      <strong className="font-semibold text-landing-blue">{highlight}</strong>
       {after}
     </span>
   );
@@ -22,7 +22,7 @@ export function BenefitsSection() {
         <div>
           <h2 className="text-2xl font-bold text-landing-navy md:text-3xl">
             Benefits of partnering with{" "}
-            <span className="text-landing-orange">TrustHire</span>
+            <span className="text-landing-blue">TrustHire</span>
           </h2>
           <p className="mt-4 text-muted">
             A complete referral hiring platform built for Indian businesses — with
@@ -33,7 +33,7 @@ export function BenefitsSection() {
         <ul className="space-y-4">
           {BENEFITS.map((item) => (
             <li key={item.text} className="flex gap-3 text-sm leading-relaxed text-landing-navy/90">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-landing-orange text-white">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-landing-blue text-white">
                 <Check className="h-3 w-3" strokeWidth={3} />
               </span>
               <BenefitText text={item.text} highlight={item.highlight} />

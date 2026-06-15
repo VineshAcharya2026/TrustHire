@@ -40,7 +40,7 @@ export const ROLE_PLANS: RolePlan[] = [
     pricingNote:
       "You set the referral bounty per role. Platform admin handles milestone verification and payout release.",
     icon: Briefcase,
-    accentClass: "from-landing-orange to-landing-orangeDark",
+    accentClass: "from-landing-blue to-landing-blueDark",
   },
   {
     id: "REFERRER",
@@ -66,7 +66,7 @@ export const ROLE_PLANS: RolePlan[] = [
     pricingNote:
       "Rewards are set per job by the employer. You earn in INR when admin confirms retention milestones.",
     icon: Award,
-    accentClass: "from-landing-orangeDark to-landing-orange",
+    accentClass: "from-landing-blueDark to-landing-blue",
   },
 ];
 

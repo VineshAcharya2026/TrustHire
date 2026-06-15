@@ -15,7 +15,7 @@ export function LandingHero() {
             </span>{" "}
             <span className="text-white/95">OPPORTUNITY</span>
           </h1>
-          <p className="mt-6 inline-block rounded-full bg-white px-5 py-2.5 text-base font-bold text-landing-orange shadow-lg md:text-lg">
+          <p className="mt-6 inline-block rounded-full bg-white px-5 py-2.5 text-base font-bold text-landing-blue shadow-lg md:text-lg">
             Earn up to {formatCurrency(EXAMPLE_BOUNTY)} per successful hire!
           </p>
           <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/90 md:text-base">
@@ -25,7 +25,7 @@ export function LandingHero() {
           <div className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
             <Link
               href="#get-started"
-              className="rounded-md bg-white px-6 py-3 text-sm font-bold text-landing-orange shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl"
+              className="rounded-md bg-white px-6 py-3 text-sm font-bold text-landing-blue shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl"
             >
               Start now
             </Link>

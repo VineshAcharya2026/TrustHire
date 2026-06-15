@@ -29,7 +29,7 @@ export function QuickStartForm() {
       <div className="mx-auto max-w-3xl px-4">
         <h2 className="text-center text-2xl font-bold md:text-3xl">
           <span className="text-landing-navy">Start your </span>
-          <span className="text-landing-orange">TrustHire journey</span>
+          <span className="text-landing-blue">TrustHire journey</span>
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted">
           Pick your role and we&apos;ll take you straight to registration.
@@ -37,7 +37,7 @@ export function QuickStartForm() {
 
         <form
           onSubmit={handleSubmit}
-          className="mx-auto mt-10 max-w-2xl space-y-4 rounded-xl border border-landing-orange/15 bg-white p-6 shadow-card md:p-8"
+          className="mx-auto mt-10 max-w-2xl space-y-4 rounded-xl border border-landing-blue/15 bg-white p-6 shadow-card md:p-8"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
@@ -50,7 +50,7 @@ export function QuickStartForm() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full name"
-                className="h-11 w-full rounded-md border border-landing-orange/20 px-3 text-sm transition-colors focus:border-landing-orange focus:outline-none focus:ring-2 focus:ring-landing-orange/30"
+                className="h-11 w-full rounded-md border border-landing-blue/20 px-3 text-sm transition-colors focus:border-landing-blue focus:outline-none focus:ring-2 focus:ring-landing-blue/30"
               />
             </div>
             <div className="space-y-2">
@@ -63,7 +63,7 @@ export function QuickStartForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@company.com"
-                className="h-11 w-full rounded-md border border-landing-orange/20 px-3 text-sm transition-colors focus:border-landing-orange focus:outline-none focus:ring-2 focus:ring-landing-orange/30"
+                className="h-11 w-full rounded-md border border-landing-blue/20 px-3 text-sm transition-colors focus:border-landing-blue focus:outline-none focus:ring-2 focus:ring-landing-blue/30"
               />
             </div>
           </div>
@@ -76,7 +76,7 @@ export function QuickStartForm() {
               id="qs-role"
               value={role}
               onChange={(e) => setRole(e.target.value as RolePlanId)}
-              className="h-11 w-full rounded-md border border-landing-orange/20 bg-white px-3 text-sm focus:border-landing-orange focus:outline-none focus:ring-2 focus:ring-landing-orange/30"
+              className="h-11 w-full rounded-md border border-landing-blue/20 bg-white px-3 text-sm focus:border-landing-blue focus:outline-none focus:ring-2 focus:ring-landing-blue/30"
             >
               {QUICK_START_ROLES.map((r) => (
                 <option key={r.value} value={r.value}>
@@ -89,13 +89,13 @@ export function QuickStartForm() {
           <div className="flex flex-col gap-3 pt-2 sm:flex-row">
             <button
               type="submit"
-              className="flex-1 rounded-md bg-landing-orange py-3 text-sm font-bold text-white shadow-subtle transition-all hover:bg-landing-orangeDark hover:shadow-card"
+              className="flex-1 rounded-md bg-landing-blue py-3 text-sm font-bold text-white shadow-subtle transition-all hover:bg-landing-blueDark hover:shadow-card"
             >
               Create account
             </button>
             <a
               href="/login"
-              className="flex-1 rounded-md border-2 border-landing-orange py-3 text-center text-sm font-bold text-landing-orange transition-all hover:bg-landing-orangeLight"
+              className="flex-1 rounded-md border-2 border-landing-blue py-3 text-center text-sm font-bold text-landing-blue transition-all hover:bg-landing-blueLight"
             >
               Track your referrals
             </a>

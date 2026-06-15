@@ -5,11 +5,11 @@ import { FOOTER_LINKS } from "@/components/home/landingContent";
 export function LandingFooter() {
   return (
     <footer>
-      <div className="border-t border-landing-orange/10 bg-white py-12">
+      <div className="border-t border-landing-blue/10 bg-white py-12">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-landing-orange">
+              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-landing-blue">
                 <Briefcase className="h-4 w-4 text-white" />
               </div>
               <span className="text-lg font-bold text-landing-navy">TrustHire</span>
@@ -26,7 +26,7 @@ export function LandingFooter() {
                 <li key={link.href + link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted transition-colors hover:text-landing-orange"
+                    className="text-sm text-muted transition-colors hover:text-landing-blue"
                   >
                     {link.label}
                   </Link>
@@ -41,16 +41,16 @@ export function LandingFooter() {
             </h3>
             <a
               href={`mailto:${FOOTER_LINKS.contact.email}`}
-              className="mt-4 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-landing-orange"
+              className="mt-4 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-landing-blue"
             >
               <Mail className="h-4 w-4" />
               {FOOTER_LINKS.contact.email}
             </a>
             <div className="mt-4 flex gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-landing-orangeLight text-landing-orange">
+              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-landing-blueLight text-landing-blue">
                 <Linkedin className="h-4 w-4" />
               </span>
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-landing-orangeLight text-landing-orange">
+              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-landing-blueLight text-landing-blue">
                 <Twitter className="h-4 w-4" />
               </span>
             </div>

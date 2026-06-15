@@ -38,10 +38,10 @@ export function RolePlanModal({
 
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-landing-orangeLight ring-1 ring-landing-orange/25">
-                <Icon className="h-5 w-5 text-landing-orange" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-landing-blueLight ring-1 ring-landing-blue/25">
+                <Icon className="h-5 w-5 text-landing-blue" />
               </div>
-              <Badge className="bg-landing-orangeLight text-landing-orange">{plan.title}</Badge>
+              <Badge className="bg-landing-blueLight text-landing-blue">{plan.title}</Badge>
             </div>
             <DialogTitle className="text-2xl leading-snug text-landing-navy">
               {plan.headline}
@@ -59,7 +59,7 @@ export function RolePlanModal({
               <ul className="space-y-2.5">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex gap-2.5 text-sm text-muted">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-landing-orange" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-landing-blue" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -73,7 +73,7 @@ export function RolePlanModal({
               <ol className="space-y-3">
                 {plan.steps.map((step, i) => (
                   <li key={step} className="flex gap-3 text-sm text-muted">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-landing-orange text-xs font-bold text-white">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-landing-blue text-xs font-bold text-white">
                       {i + 1}
                     </span>
                     <span className="pt-0.5">{step}</span>
@@ -83,7 +83,7 @@ export function RolePlanModal({
             </div>
 
             {plan.pricingNote && (
-              <p className="rounded-lg border border-landing-orange/15 bg-landing-orangeLight px-4 py-3 text-sm text-muted">
+              <p className="rounded-lg border border-landing-blue/15 bg-landing-blueLight px-4 py-3 text-sm text-muted">
                 {plan.pricingNote}
               </p>
             )}
@@ -95,7 +95,7 @@ export function RolePlanModal({
             </Button>
             <Button
               asChild
-              className="bg-landing-orange text-white hover:bg-landing-orangeDark"
+              className="bg-landing-blue text-white hover:bg-landing-blueDark"
             >
               <Link href={`/register?role=${plan.id}`}>Join as {plan.title}</Link>
             </Button>
