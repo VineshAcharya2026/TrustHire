@@ -6,7 +6,7 @@ export async function GET(
   _request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { error } = await requireRole(["REFERRER", "MENTOR", "MENTEE"]);
+  const { error } = await requireRole("REFERRER");
   if (error) return error;
 
   const job = await prisma.job.findFirst({

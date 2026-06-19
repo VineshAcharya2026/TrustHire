@@ -3,15 +3,12 @@ import { NextResponse } from "next/server";
 import type { Role } from "@prisma/client";
 
 const roleRoutes: Record<string, Role> = {
-  "/dashboard/admin": "ADMIN",
   "/dashboard/employer": "EMPLOYER",
   "/dashboard/referrer": "REFERRER",
 };
 
 function dashboardForRole(role: Role): string {
   switch (role) {
-    case "ADMIN":
-      return "/dashboard/admin";
     case "EMPLOYER":
       return "/dashboard/employer";
     case "REFERRER":
@@ -25,10 +22,6 @@ export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
-
-    if (path.startsWith("/dashboard/mentor") || path.startsWith("/dashboard/mentee")) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
 
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Bell, Banknote, CheckCheck, FileText, Gift, UserCheck } from "lucide-react";
+import { Bell, CheckCheck, FileText, UserCheck } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -29,18 +29,11 @@ function formatRelativeTime(date: string) {
 
 function getNotificationHref(type: string, role?: string): string | null {
   switch (type) {
-    case "REWARD":
-    case "PAYOUT":
-      if (role === "REFERRER") return "/dashboard/referrer/rewards";
-      if (role === "ADMIN") return "/dashboard/admin/payouts";
-      return null;
     case "REFERRAL":
       if (role === "EMPLOYER") return "/dashboard/employer/referrals";
       if (role === "REFERRER") return "/dashboard/referrer/referrals";
-      if (role === "ADMIN") return "/dashboard/admin/referrals";
       return null;
     case "ACCOUNT":
-      if (role === "ADMIN") return "/dashboard/admin";
       if (role === "EMPLOYER") return "/dashboard/employer";
       if (role === "REFERRER") return "/dashboard/referrer";
       return null;
@@ -51,15 +44,12 @@ function getNotificationHref(type: string, role?: string): string | null {
 
 function getNotificationIcon(type: string) {
   switch (type) {
-    case "REWARD":
-    case "PAYOUT":
-      return Gift;
     case "ACCOUNT":
       return UserCheck;
     case "REFERRAL":
       return FileText;
     default:
-      return Banknote;
+      return Bell;
   }
 }
 

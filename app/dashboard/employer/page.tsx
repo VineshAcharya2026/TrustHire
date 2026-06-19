@@ -47,7 +47,10 @@ export default async function EmployerDashboardPage() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" asChild>
-            <Link href="/dashboard/employer/referrals">View leads</Link>
+            <Link href="/dashboard/employer/referrals">View referrals</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/employer/logins">View logins</Link>
           </Button>
           <Button variant="accent" asChild>
             <Link href="/dashboard/employer/jobs/new">Post job</Link>

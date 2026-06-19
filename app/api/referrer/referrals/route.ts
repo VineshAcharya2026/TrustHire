@@ -20,8 +20,6 @@ export async function GET(request: Request) {
     where: { referrerId: session.user.id, ...buildReferralWhere(filters) },
     include: {
       job: { include: { employer: true, skills: { include: { skill: true } } } },
-      reward: { include: { payouts: true } },
-      milestones: true,
     },
     orderBy: { submittedAt: "desc" },
   });
@@ -102,7 +100,6 @@ export async function POST(request: Request) {
     action: "REFERRAL_SUBMITTED",
     entity: "Referral",
     entityId: referral.id,
-    referralId: referral.id,
     ipAddress: ip,
   });
 

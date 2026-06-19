@@ -13,8 +13,6 @@ export async function GET(
     where: { id: params.id, referrerId: session.user.id },
     include: {
       job: { include: { employer: true } },
-      reward: { include: { payouts: true } },
-      milestones: true,
     },
   });
 

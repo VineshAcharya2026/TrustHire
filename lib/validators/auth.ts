@@ -6,13 +6,9 @@ export const registerSchema = z.object({
   phone: z.string().optional(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  role: z.enum(["EMPLOYER", "REFERRER", "MENTOR", "MENTEE"]),
+  role: z.enum(["EMPLOYER", "REFERRER"]),
   companyName: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
-  title: z.string().optional(),
-  expertise: z.string().optional(),
-  goals: z.string().optional(),
-  desiredSkills: z.string().optional(),
 });
 
 export const loginSchema = z.object({

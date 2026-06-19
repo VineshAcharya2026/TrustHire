@@ -13,7 +13,7 @@ async function getOwnJob(jobId: string, userId: string) {
     where: { id: jobId, employerId: employer.id },
     include: {
       referrals: {
-        include: { referrer: { include: { profile: true } }, reward: true },
+        include: { referrer: { include: { profile: true } } },
         orderBy: { submittedAt: "desc" },
       },
     },

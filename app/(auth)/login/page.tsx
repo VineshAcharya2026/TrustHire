@@ -58,8 +58,9 @@ export default function LoginPage() {
       return;
     }
 
+    await fetch("/api/auth/login-log", { method: "POST" });
+
     const paths: Record<string, string> = {
-      ADMIN: "/dashboard/admin",
       EMPLOYER: "/dashboard/employer",
       REFERRER: "/dashboard/referrer",
     };
@@ -80,12 +81,12 @@ export default function LoginPage() {
             Hire through trusted referrals
           </h1>
           <p className="text-lg text-white/70">
-            Connect employers with vetted referrers. Track candidates, manage bounties, and release rewards with confidence.
+            Connect employers with referrers. Submit candidates, track referrals, and review all sign-in activity.
           </p>
           <div className="space-y-4 pt-4">
             {[
-              { icon: Users, text: "Curated referrer network" },
-              { icon: Shield, text: "Milestone-based reward releases" },
+              { icon: Users, text: "Referrer network" },
+              { icon: Shield, text: "Employer login oversight" },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3 text-white/80">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">

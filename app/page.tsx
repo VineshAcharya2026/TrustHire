@@ -3,7 +3,6 @@ import { LandingHero } from "@/components/home/LandingHero";
 import { QuickStartForm } from "@/components/home/QuickStartForm";
 import { ReferralIntentStrip } from "@/components/home/ReferralIntentStrip";
 import { BenefitsSection } from "@/components/home/BenefitsSection";
-import { RewardsTierSection } from "@/components/home/RewardsTierSection";
 import { RolePlanSection } from "@/components/home/RolePlanSection";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { FAQSection } from "@/components/home/FAQSection";
@@ -18,7 +17,6 @@ export default function HomePage() {
         <QuickStartForm />
         <ReferralIntentStrip />
         <BenefitsSection />
-        <RewardsTierSection />
         <RolePlanSection />
         <HowItWorksSection />
         <FAQSection />

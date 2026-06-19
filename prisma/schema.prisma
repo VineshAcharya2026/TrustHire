@@ -8,32 +8,25 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(cuid())
-  email            String         @unique
-  phone            String?        @unique
-  passwordHash     String
-  role             Role           @default(REFERRER)
-  status           UserStatus     @default(PENDING)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  profile          Profile?
-  employer         Employer?
-  mentorProfile    MentorProfile?
-  menteeProfile    MenteeProfile?
-  referrals        Referral[]
-  auditLogs        AuditLog[]
-  notifications    Notification[]
-  mentorSessions   Mentorship[]   @relation("MentorUser")
-  menteeSessions   Mentorship[]   @relation("MenteeUser")
+  id            String         @id @default(cuid())
+  email         String         @unique
+  phone         String?        @unique
+  passwordHash  String
+  role          Role           @default(REFERRER)
+  status        UserStatus     @default(ACTIVE)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  profile       Profile?
+  employer      Employer?
+  referrals     Referral[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+  loginEvents   LoginEvent[]
 }
 
 enum Role {
-  ADMIN
   EMPLOYER
   REFERRER
-  MENTOR
-  MENTEE
-  CANDIDATE
 }
 
 enum UserStatus {
@@ -44,13 +37,6 @@ enum UserStatus {
   DELETED
 }
 
-enum MentorshipStatus {
-  PENDING
-  ACTIVE
-  COMPLETED
-  REJECTED
-}
-
 model Profile {
   id        String  @id @default(cuid())
   userId    String  @unique
@@ -59,40 +45,6 @@ model Profile {
   lastName  String
   avatar    String?
   bio       String?
-}
-
-model MentorProfile {
-  id         String   @id @default(cuid())
-  userId     String   @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company    String?
-  title      String?
-  expertise  String[]
-  yearsExp   Int?
-  maxMentees Int      @default(5)
-}
-
-model MenteeProfile {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentRole   String?
-  goals         String?
-  desiredSkills String[]
-}
-
-model Mentorship {
-  id        String           @id @default(cuid())
-  mentorId  String
-  menteeId  String
-  mentor    User             @relation("MentorUser", fields: [mentorId], references: [id], onDelete: Cascade)
-  mentee    User             @relation("MenteeUser", fields: [menteeId], references: [id], onDelete: Cascade)
-  status    MentorshipStatus @default(PENDING)
-  message   String?
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  @@unique([mentorId, menteeId])
 }
 
 model Employer {
@@ -135,21 +87,18 @@ model Job {
 }
 
 model Referral {
-  id             String               @id @default(cuid())
+  id             String         @id @default(cuid())
   jobId          String
-  job            Job                  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job            Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
   referrerId     String
-  referrer       User                 @relation(fields: [referrerId], references: [id])
+  referrer       User           @relation(fields: [referrerId], references: [id])
   candidateName  String
   candidateEmail String
   candidatePhone String
   resumeUrl      String?
-  status         ReferralStatus       @default(SUBMITTED)
-  submittedAt    DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  reward         Reward?
-  milestones     RetentionMilestone[]
-  auditLogs      AuditLog[]
+  status         ReferralStatus @default(SUBMITTED)
+  submittedAt    DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   @@unique([jobId, candidateEmail])
 }
@@ -164,44 +113,15 @@ enum ReferralStatus {
   REJECTED
 }
 
-model Reward {
-  id             String       @id @default(cuid())
-  referralId     String       @unique
-  referral       Referral     @relation(fields: [referralId], references: [id], onDelete: Cascade)
-  totalAmount    Float
-  status         RewardStatus @default(LOCKED)
-  releasedAmount Float        @default(0)
-  createdAt      DateTime     @default(now())
-  payouts        Payout[]
-}
-
-enum RewardStatus {
-  LOCKED
-  PARTIAL
-  RELEASED
-  CANCELLED
-  DISPUTED
-}
-
-model RetentionMilestone {
-  id          String    @id @default(cuid())
-  referralId  String
-  referral    Referral  @relation(fields: [referralId], references: [id], onDelete: Cascade)
-  dayMark     Int
-  percentage  Float
-  confirmed   Boolean   @default(false)
-  confirmedAt DateTime?
-}
-
-model Payout {
-  id         String    @id @default(cuid())
-  rewardId   String
-  reward     Reward    @relation(fields: [rewardId], references: [id], onDelete: Cascade)
-  amount     Float
-  status     String    @default("PENDING")
-  approvedBy String?
-  approvedAt DateTime?
-  note       String?
+model LoginEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  role      Role
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
 }
 
 model AuditLog {
@@ -212,7 +132,6 @@ model AuditLog {
   entity     String
   entityId   String?
   referralId String?
-  referral   Referral? @relation(fields: [referralId], references: [id])
   ipAddress  String?
   metadata   Json?
   createdAt  DateTime  @default(now())

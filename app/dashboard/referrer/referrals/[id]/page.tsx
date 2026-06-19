@@ -4,12 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { LeadOverviewHeader, InfoPanel, InfoRow } from "@/components/referrals/LeadOverview";
 import { ReferralTimeline } from "@/components/referrals/ReferralTimeline";
-import { RewardStatusBadge } from "@/components/referrals/StatusBadge";
 import { Alert } from "@/components/ui/alert";
 import { fetchJson } from "@/lib/api-utils";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import type { ReferralStatus, RewardStatus } from "@prisma/client";
-import { Building2, Calendar, IndianRupee, Mail, Wallet } from "lucide-react";
+import type { ReferralStatus } from "@prisma/client";
+import { Building2, Calendar, IndianRupee, Mail } from "lucide-react";
 
 type Referral = {
   id: string;
@@ -18,13 +17,6 @@ type Referral = {
   status: ReferralStatus;
   submittedAt: string;
   job: { title: string; rewardAmount: number; employer: { companyName: string } };
-  milestones: { dayMark: number; percentage: number; confirmed: boolean }[];
-  reward?: {
-    status: RewardStatus;
-    totalAmount: number;
-    releasedAmount: number;
-    payouts: { amount: number; status: string; approvedAt?: string }[];
-  };
 };
 
 export default function ReferrerReferralOverviewPage() {
@@ -57,10 +49,6 @@ export default function ReferrerReferralOverviewPage() {
     return <Alert variant="error">{error || "Referral not found"}</Alert>;
   }
 
-  const milestones = referral.milestones ?? [];
-  const payouts = referral.reward?.payouts ?? [];
-  const bountyTotal = referral.reward?.totalAmount ?? referral.job.rewardAmount;
-
   return (
     <div className="space-y-6">
       <LeadOverviewHeader
@@ -68,96 +56,33 @@ export default function ReferrerReferralOverviewPage() {
         status={referral.status}
         subtitle={`${referral.job.title} at ${referral.job.employer.companyName}`}
         backHref="/dashboard/referrer/referrals"
-        backLabel="Back to my leads"
+        backLabel="Back to my referrals"
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="lg:col-span-2">
           <ReferralTimeline currentStatus={referral.status} />
-
-          {referral.reward ? (
-            <InfoPanel title="Reward tracker">
-              <div className="mb-4 flex items-center justify-between">
-                <RewardStatusBadge status={referral.reward.status} />
-                <span className="text-xl font-bold text-accent">
-                  {formatCurrency(referral.reward.totalAmount)}
-                </span>
-              </div>
-              <InfoRow
-                label="Released"
-                value={formatCurrency(referral.reward.releasedAmount)}
-                icon={<Wallet className="h-3.5 w-3.5" />}
-              />
-              <InfoRow
-                label="Remaining"
-                value={formatCurrency(referral.reward.totalAmount - referral.reward.releasedAmount)}
-                icon={<IndianRupee className="h-3.5 w-3.5" />}
-              />
-              {milestones.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted">Milestones</p>
-                  {milestones.map((m) => {
-                    const amount = (bountyTotal * m.percentage) / 100;
-                    return (
-                    <div
-                      key={m.dayMark}
-                      className="flex items-center justify-between rounded-md border border-primary/8 px-3 py-2 text-sm transition-colors hover:bg-surface"
-                    >
-                      <span>
-                        Day {m.dayMark} · {formatCurrency(amount)} ({m.percentage}%)
-                      </span>
-                      <span className={m.confirmed ? "font-medium text-success" : "text-muted"}>
-                        {m.confirmed ? "Confirmed" : "Pending"}
-                      </span>
-                    </div>
-                    );
-                  })}
-                </div>
-              )}
-              {payouts.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted">Payout history</p>
-                  {payouts.map((p, i) => (
-                    <div key={i} className="flex justify-between text-sm text-muted">
-                      <span>{p.status}</span>
-                      <span className="font-medium text-primary">{formatCurrency(p.amount)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </InfoPanel>
-          ) : (
-            <InfoPanel title="Potential reward">
-              <p className="text-sm text-muted">
-                If this candidate is hired, you&apos;ll earn{" "}
-                <strong className="text-accent">{formatCurrency(referral.job.rewardAmount)}</strong> in milestone
-                payouts.
-              </p>
-            </InfoPanel>
-          )}
         </div>
 
-        <div className="space-y-6">
-          <InfoPanel title="Candidate">
-            <InfoRow label="Email" value={referral.candidateEmail} icon={<Mail className="h-3.5 w-3.5" />} />
-            <InfoRow
-              label="Company"
-              value={referral.job.employer.companyName}
-              icon={<Building2 className="h-3.5 w-3.5" />}
-            />
-            <InfoRow label="Role" value={referral.job.title} />
-            <InfoRow
-              label="Bounty"
-              value={formatCurrency(referral.job.rewardAmount)}
-              icon={<IndianRupee className="h-3.5 w-3.5" />}
-            />
-            <InfoRow
-              label="Submitted"
-              value={formatDate(referral.submittedAt)}
-              icon={<Calendar className="h-3.5 w-3.5" />}
-            />
-          </InfoPanel>
-        </div>
+        <InfoPanel title="Candidate">
+          <InfoRow label="Email" value={referral.candidateEmail} icon={<Mail className="h-3.5 w-3.5" />} />
+          <InfoRow
+            label="Company"
+            value={referral.job.employer.companyName}
+            icon={<Building2 className="h-3.5 w-3.5" />}
+          />
+          <InfoRow label="Role" value={referral.job.title} />
+          <InfoRow
+            label="Bounty"
+            value={formatCurrency(referral.job.rewardAmount)}
+            icon={<IndianRupee className="h-3.5 w-3.5" />}
+          />
+          <InfoRow
+            label="Submitted"
+            value={formatDate(referral.submittedAt)}
+            icon={<Calendar className="h-3.5 w-3.5" />}
+          />
+        </InfoPanel>
       </div>
     </div>
   );

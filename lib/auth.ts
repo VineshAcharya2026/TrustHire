@@ -39,8 +39,6 @@ export async function requireRole(roles: Role | Role[]) {
 
 export function dashboardPathForRole(role: Role): string {
   switch (role) {
-    case "ADMIN":
-      return "/dashboard/admin";
     case "EMPLOYER":
       return "/dashboard/employer";
     case "REFERRER":

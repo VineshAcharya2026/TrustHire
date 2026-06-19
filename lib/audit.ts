@@ -6,7 +6,6 @@ export async function logAudit(params: {
   action: string;
   entity: string;
   entityId?: string;
-  referralId?: string;
   ipAddress?: string;
   metadata?: Prisma.InputJsonValue;
 }) {
@@ -16,7 +15,6 @@ export async function logAudit(params: {
       action: params.action,
       entity: params.entity,
       entityId: params.entityId,
-      referralId: params.referralId,
       ipAddress: params.ipAddress,
       metadata: params.metadata,
     },

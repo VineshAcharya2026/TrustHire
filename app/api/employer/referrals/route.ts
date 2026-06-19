@@ -22,7 +22,6 @@ export async function GET(request: Request) {
     include: {
       job: { include: { skills: { include: { skill: true } } } },
       referrer: { include: { profile: true } },
-      reward: { include: { payouts: true } },
     },
     orderBy: { submittedAt: "desc" },
   });

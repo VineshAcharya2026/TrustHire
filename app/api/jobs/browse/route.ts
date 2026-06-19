@@ -10,7 +10,7 @@ const jobInclude = {
 };
 
 export async function GET(request: Request) {
-  const { error } = await requireRole(["REFERRER", "MENTOR", "MENTEE"]);
+  const { error } = await requireRole("REFERRER");
   if (error) return error;
 
   const filters = parseJobFilters(new URL(request.url).searchParams);
