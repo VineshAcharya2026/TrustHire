@@ -81,12 +81,6 @@ export function RolePlanModal({
                 ))}
               </ol>
             </div>
-
-            {plan.pricingNote && (
-              <p className="rounded-lg border border-landing-blue/15 bg-landing-blueLight px-4 py-3 text-sm text-muted">
-                {plan.pricingNote}
-              </p>
-            )}
           </section>
 
           <DialogFooter className="mt-6 gap-2 pt-2">

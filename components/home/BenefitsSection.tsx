@@ -25,8 +25,7 @@ export function BenefitsSection() {
             <span className="text-landing-blue">TrustHire</span>
           </h2>
           <p className="mt-4 text-muted">
-            A complete referral hiring platform built for Indian businesses — with
-            milestone payouts and admin-backed trust.
+            A mentorship platform built for professionals — with structured matching and super admin oversight.
           </p>
         </div>
 

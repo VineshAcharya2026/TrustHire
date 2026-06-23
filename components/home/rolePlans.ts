@@ -1,6 +1,6 @@
-import { Award, Briefcase, type LucideIcon } from "lucide-react";
+import { GraduationCap, Target, type LucideIcon } from "lucide-react";
 
-export type RolePlanId = "EMPLOYER" | "REFERRER";
+export type RolePlanId = "MENTOR" | "MENTEE";
 
 export type RolePlan = {
   id: RolePlanId;
@@ -10,56 +10,55 @@ export type RolePlan = {
   highlights: string[];
   features: string[];
   steps: string[];
-  pricingNote?: string;
   icon: LucideIcon;
   accentClass: string;
 };
 
 export const ROLE_PLANS: RolePlan[] = [
   {
-    id: "EMPLOYER",
-    title: "Employer",
-    headline: "Post roles. Review referrals. Monitor logins.",
+    id: "MENTOR",
+    title: "Mentor",
+    headline: "Share expertise. Guide the next generation.",
     summary:
-      "List open positions, review candidate referrals from referrers, and track all platform sign-in activity.",
-    highlights: ["Post jobs", "Review referrals", "View logins"],
+      "Create a mentor profile, accept mentee requests, and help others grow through structured mentorship.",
+    highlights: ["Build profile", "Accept requests", "Guide mentees"],
     features: [
-      "Create job postings with skills, requirements, and referral bounty amounts",
-      "Receive candidate referrals from referrers",
-      "Review leads with full candidate details and referrer context",
-      "Shortlist, schedule interviews, and mark hires — full pipeline visibility",
-      "View all user login activity across the platform",
+      "Set your company, title, and areas of expertise",
+      "Control how many mentees you take on",
+      "Review and accept or reject mentorship requests",
+      "Track active mentees from your dashboard",
+      "Notifications when mentees reach out",
     ],
     steps: [
-      "Register as an Employer",
-      "Post your first job with title, description, skills, and bounty amount",
-      "Review incoming referrals and update candidate status",
-      "Monitor sign-in activity from the Logins dashboard",
+      "Register as a Mentor",
+      "Complete your profile with expertise and experience",
+      "Review incoming mentorship requests",
+      "Guide mentees toward their career goals",
     ],
-    icon: Briefcase,
+    icon: GraduationCap,
     accentClass: "from-landing-blue to-landing-blueDark",
   },
   {
-    id: "REFERRER",
-    title: "Referrer",
-    headline: "Submit candidates. Track every stage.",
+    id: "MENTEE",
+    title: "Mentee",
+    headline: "Find mentors. Set goals. Grow your career.",
     summary:
-      "Browse active jobs, submit qualified candidates, and track referral status through hire or rejection.",
-    highlights: ["Browse jobs", "Submit referrals", "Track status"],
+      "Browse mentors by skills and company, send mentorship requests, and track your learning goals.",
+    highlights: ["Find mentors", "Set goals", "Get guidance"],
     features: [
-      "Browse open roles filtered by company, skills, role title, and bounty range",
-      "Submit candidate referrals with contact details and resume links",
-      "Track referral status from submission through hire or rejection",
-      "Dashboard overview with recent referrals",
-      "Notifications when status changes",
+      "Search mentors by expertise and company",
+      "Send personalized mentorship requests",
+      "Define your current role, goals, and desired skills",
+      "Track active and pending mentorships",
+      "Notifications when mentors respond",
     ],
     steps: [
-      "Register as a Referrer",
-      "Browse jobs and pick roles that match your network",
-      "Submit candidate details for roles you believe in",
-      "Track progress on your referrals dashboard",
+      "Register as a Mentee",
+      "Set your career goals and desired skills",
+      "Browse mentors and send requests",
+      "Work with your mentor on your growth plan",
     ],
-    icon: Award,
+    icon: Target,
     accentClass: "from-landing-blueDark to-landing-blue",
   },
 ];

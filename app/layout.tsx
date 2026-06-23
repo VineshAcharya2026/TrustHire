@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TrustHire — Referral Hiring Platform",
-  description: "Connect employers, referrers, and candidates with trusted referral rewards.",
+  title: "TrustHire — Mentorship Platform",
+  description: "Connect mentors and mentees with structured mentorship requests and goal tracking.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

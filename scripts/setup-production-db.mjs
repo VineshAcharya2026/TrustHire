@@ -26,6 +26,20 @@ loadEnvFile(".env.production.local");
 loadEnvFile(".env.local");
 loadEnvFile(".env");
 
+// Prefer production-local values when present (loadEnvFile only fills unset keys).
+function preferEnvFile(file) {
+  const path = resolve(root, file);
+  if (!existsSync(path)) return;
+  for (const line of readFileSync(path, "utf8").split("\n")) {
+    const m = line.match(/^([^#=]+)=(.*)$/);
+    if (!m) continue;
+    const key = m[1].trim();
+    const value = m[2].trim().replace(/^["']|["']$/g, "");
+    if (value) process.env[key] = value;
+  }
+}
+preferEnvFile(".env.production.local");
+
 const url = process.env.DATABASE_URL;
 if (!url || url.startsWith("file:")) {
   console.error(`
@@ -45,14 +59,12 @@ const prisma = resolve(root, "node_modules/prisma/build/index.js");
 const tsx = resolve(root, "node_modules/tsx/dist/cli.mjs");
 
 console.log("Pushing schema to production database...");
-execSync(`node "${prisma}" db push`, { stdio: "inherit", cwd: root, env: process.env });
+execSync(`node "${prisma}" db push --accept-data-loss`, { stdio: "inherit", cwd: root, env: process.env });
 
 console.log("Seeding demo accounts...");
 execSync(`node "${tsx}" prisma/seed.ts`, { stdio: "inherit", cwd: root, env: process.env });
 
 console.log("\nDone! Demo logins:");
-console.log("  admin@trusthire.com / Password123!");
-console.log("  careers@acme.com / Password123!");
-console.log("  jane.doe@staffing.com / Password123!");
+console.log("  superadmin@trusthire.com / Password123!");
 console.log("  mentor@trusthire.com / Password123!");
 console.log("  mentee@trusthire.com / Password123!");

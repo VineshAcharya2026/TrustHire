@@ -44,7 +44,7 @@ export function Sidebar({ items, title }: { items: NavItem[]; title: string }) {
         })}
       </nav>
       <div className="border-t border-primary/8 p-4">
-        <p className="text-center text-[10px] text-muted">Trusted referral hiring</p>
+        <p className="text-center text-[10px] text-muted">Mentorship platform</p>
       </div>
     </aside>
   );

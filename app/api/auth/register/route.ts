@@ -5,6 +5,7 @@ import { registerSchema } from "@/lib/validators/auth";
 import { isBlacklisted } from "@/lib/blacklist";
 import { logAudit } from "@/lib/audit";
 import { getClientIp } from "@/lib/utils";
+import { parseSkillInput } from "@/lib/skills";
 
 export async function POST(request: Request) {
   try {
@@ -29,30 +30,43 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
-    if (data.role === "EMPLOYER" && !data.companyName) {
-      return NextResponse.json({ error: "Company name is required for employers" }, { status: 400 });
+    if ((data.role as string) === "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
     const passwordHash = await bcrypt.hash(data.password, 12);
     const ip = getClientIp(request);
+    const phone = data.phone?.trim() || undefined;
 
     const user = await prisma.$transaction(async (tx) => {
       const created = await tx.user.create({
         data: {
           email,
-          phone: data.phone,
+          phone,
           passwordHash,
           role: data.role,
           status: "ACTIVE",
           profile: {
             create: { firstName: data.firstName, lastName: data.lastName },
           },
-          ...(data.role === "EMPLOYER"
+          ...(data.role === "MENTOR"
             ? {
-                employer: {
+                mentorProfile: {
                   create: {
-                    companyName: data.companyName!,
-                    website: data.website || undefined,
+                    company: data.companyName,
+                    title: data.title,
+                    expertise: parseSkillInput(data.expertise),
+                  },
+                },
+              }
+            : {}),
+          ...(data.role === "MENTEE"
+            ? {
+                menteeProfile: {
+                  create: {
+                    currentRole: data.currentRole,
+                    goals: data.goals,
+                    desiredSkills: parseSkillInput(data.desiredSkills),
                   },
                 },
               }
@@ -73,7 +87,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ id: user.id, status: user.status }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[register]", err);
     return NextResponse.json({ error: "Registration failed" }, { status: 500 });
   }
 }

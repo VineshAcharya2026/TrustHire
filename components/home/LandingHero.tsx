@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
-import { EXAMPLE_BOUNTY } from "@/components/home/landingContent";
+import { GraduationCap } from "lucide-react";
 
 export function LandingHero() {
   return (
@@ -9,18 +7,18 @@ export function LandingHero() {
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 md:grid-cols-2">
         <div className="animate-fade-in text-center md:text-left">
           <h1 className="text-3xl font-bold leading-tight text-white md:text-4xl lg:text-5xl">
-            Refer talent &amp; share this{" "}
+            Find mentors.{" "}
             <span className="underline decoration-white/40 decoration-2 underline-offset-4">
-              unbeatable hiring
+              Grow your career
             </span>{" "}
-            <span className="text-white/95">OPPORTUNITY</span>
+            <span className="text-white/95">with guidance</span>
           </h1>
           <p className="mt-6 inline-block rounded-full bg-white px-5 py-2.5 text-base font-bold text-landing-blue shadow-lg md:text-lg">
-            Earn up to {formatCurrency(EXAMPLE_BOUNTY)} per successful hire!
+            Mentorship that fits your goals
           </p>
           <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/90 md:text-base">
-            TrustHire connects employers and referrers — with milestone-based INR
-            rewards and full lifecycle tracking.
+            TrustHire connects mentors and mentees — with structured requests,
+            goal tracking, and super admin oversight.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
             <Link
@@ -38,17 +36,9 @@ export function LandingHero() {
           </div>
         </div>
 
-        <div className="relative hidden animate-fade-in md:block">
-          <div className="relative overflow-hidden rounded-2xl bg-white/10 p-1 shadow-2xl ring-1 ring-white/20 backdrop-blur-sm">
-            <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-gradient-to-br from-white/20 to-white/5">
-              <div className="text-center">
-                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 ring-4 ring-white/30">
-                  <Users className="h-12 w-12 text-white" />
-                </div>
-                <p className="text-lg font-semibold text-white">Trusted hiring network</p>
-                <p className="mt-1 text-sm text-white/80">Employers · Referrers</p>
-              </div>
-            </div>
+        <div className="relative mx-auto flex h-64 w-64 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm md:h-80 md:w-80">
+          <div className="flex h-40 w-40 items-center justify-center rounded-full bg-white shadow-2xl md:h-48 md:w-48">
+            <GraduationCap className="h-20 w-20 text-landing-blue md:h-24 md:w-24" />
           </div>
         </div>
       </div>

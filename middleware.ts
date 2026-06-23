@@ -3,16 +3,19 @@ import { NextResponse } from "next/server";
 import type { Role } from "@prisma/client";
 
 const roleRoutes: Record<string, Role> = {
-  "/dashboard/employer": "EMPLOYER",
-  "/dashboard/referrer": "REFERRER",
+  "/dashboard/admin": "SUPER_ADMIN",
+  "/dashboard/mentor": "MENTOR",
+  "/dashboard/mentee": "MENTEE",
 };
 
 function dashboardForRole(role: Role): string {
   switch (role) {
-    case "EMPLOYER":
-      return "/dashboard/employer";
-    case "REFERRER":
-      return "/dashboard/referrer";
+    case "SUPER_ADMIN":
+      return "/dashboard/admin";
+    case "MENTOR":
+      return "/dashboard/mentor";
+    case "MENTEE":
+      return "/dashboard/mentee";
     default:
       return "/";
   }

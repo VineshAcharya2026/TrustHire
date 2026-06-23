@@ -9,7 +9,7 @@ export function QuickStartForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<RolePlanId>("REFERRER");
+  const [role, setRole] = useState<RolePlanId>("MENTEE");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -97,7 +97,7 @@ export function QuickStartForm() {
               href="/login"
               className="flex-1 rounded-md border-2 border-landing-blue py-3 text-center text-sm font-bold text-landing-blue transition-all hover:bg-landing-blueLight"
             >
-              Track your referrals
+              Track your mentorships
             </a>
           </div>
         </form>

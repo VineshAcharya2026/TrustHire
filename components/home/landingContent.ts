@@ -1,14 +1,6 @@
 import type { RolePlanId } from "@/components/home/rolePlans";
 
-export const EXAMPLE_BOUNTY = 50000;
-export const MILESTONE_SPLITS = [
-  { day: 30, pct: 30 },
-  { day: 60, pct: 30 },
-  { day: 90, pct: 40 },
-] as const;
-
 export const NAV_LINKS = [
-  { href: "#rewards", label: "Rewards" },
   { href: "#plans", label: "Roles" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#faq", label: "FAQ" },
@@ -16,120 +8,91 @@ export const NAV_LINKS = [
 
 export const BENEFITS: { text: string; highlight?: string }[] = [
   {
-    text: "Admin-approved referrers with duplicate detection and fraud prevention on every submission.",
-    highlight: "Admin-approved referrers",
+    text: "Mentors set expertise, company, and capacity — mentees find the right guide.",
+    highlight: "Expert mentors",
   },
   {
-    text: "Employers post jobs with skill tags and set referral bounties in INR per role.",
-    highlight: "referral bounties in INR",
+    text: "Mentees define goals and desired skills to match with relevant mentors.",
+    highlight: "Goal-driven matching",
   },
   {
-    text: "Milestone rewards release at 30, 60, and 90 days — only when hires stick.",
-    highlight: "Milestone rewards",
+    text: "Request, accept, or reject mentorships with full status tracking.",
+    highlight: "Structured mentorship flow",
   },
   {
-    text: "Full referral lifecycle tracking from submission through shortlist, interview, and hire.",
-    highlight: "Full referral lifecycle",
+    text: "Search mentors by company, skills, and keywords.",
+    highlight: "Smart search",
   },
   {
-    text: "Advanced filters across jobs and referrals — company, role, skills, and bounty range.",
-    highlight: "Advanced filters",
-  },
-  {
-    text: "Real-time in-app notifications when referral status changes or payouts are released.",
+    text: "Real-time notifications when mentorship requests are sent or answered.",
     highlight: "Real-time notifications",
   },
   {
-    text: "Platform admin oversees payouts, disputes, and audit logs.",
-    highlight: "Platform admin",
+    text: "Super admin oversees users, mentorships, logins, and platform config.",
+    highlight: "Super admin oversight",
   },
 ];
 
 export const HOW_IT_WORKS_STEPS = [
   {
     step: 1,
-    title: "Register & get approved",
-    description:
-      "Create your free account as a Referrer or Employer. Admin reviews and activates your profile.",
+    title: "Register as mentor or mentee",
+    description: "Create your free account and complete your profile with goals or expertise.",
   },
   {
     step: 2,
-    title: "Browse jobs & submit referrals",
-    description:
-      "Find open roles with advanced filters. Submit qualified candidates with contact details and resume links.",
+    title: "Connect through mentorship",
+    description: "Mentees browse mentors and send requests. Mentors review and accept mentees.",
   },
   {
     step: 3,
-    title: "Earn milestone rewards",
-    description:
-      "When your referral is hired and stays, admin confirms retention at 30, 60, and 90 days — you earn in INR.",
+    title: "Grow together",
+    description: "Track active mentorships, update goals, and build lasting professional relationships.",
   },
 ] as const;
 
 export const FAQ_ITEMS: { question: string; answer: string }[] = [
   {
     question: "Who can join TrustHire?",
-    answer:
-      "Employers post jobs and review candidates. Referrers submit leads and earn bounties. Platform admin manages approvals and payouts.",
+    answer: "Mentors share expertise and guide mentees. Mentees set goals and find mentors. Super admin manages the platform.",
   },
   {
-    question: "How does account approval work?",
-    answer:
-      "After registration, your account status is Pending until a platform admin approves it. You'll be notified and can sign in once active.",
+    question: "How do mentorship requests work?",
+    answer: "Mentees send a request to a mentor. The mentor can accept, reject, or later mark the mentorship as completed.",
   },
   {
-    question: "When are INR rewards paid to referrers?",
-    answer:
-      "Rewards are released in three milestones — 30, 60, and 90 days after hire — when admin confirms the candidate is still employed. Payout percentages are 30%, 30%, and 40% of the job bounty.",
+    question: "Is there a limit on mentees per mentor?",
+    answer: "Yes. Each mentor sets a maximum number of active mentees. The default is 5 unless changed in their profile.",
   },
   {
-    question: "What is a referral bounty?",
-    answer:
-      "Each job has a bounty set by the employer (e.g. ₹50,000). Referrers earn a portion of that bounty at each retention milestone when their referred candidate is hired and stays.",
-  },
-  {
-    question: "Can employers manage milestone payouts?",
-    answer:
-      "No. Milestone confirmation and payout release are managed by platform admin only. Employers focus on reviewing candidates and updating hire status.",
-  },
-  {
-    question: "What filters are available for jobs?",
-    answer:
-      "Search by keyword, company, job title, skills, status, and bounty range (min/max in ₹). Filters work on job browse and referral list pages.",
+    question: "Can I change my goals as a mentee?",
+    answer: "Yes. Update your current role, goals, and desired skills anytime from the Goals page in your dashboard.",
   },
   {
     question: "Is TrustHire free to join?",
-    answer:
-      "Yes. Registration is free. Referrers earn when placements succeed. Employers set bounties per role.",
+    answer: "Yes. Registration is free for mentors and mentees.",
   },
   {
-    question: "What currency does TrustHire use?",
-    answer:
-      "All bounties, rewards, and payouts are displayed and processed in Indian Rupees (INR, ₹).",
-  },
-  {
-    question: "How do I track my referrals?",
-    answer:
-      "Sign in to your dashboard. Referrers see all leads, statuses, and reward milestones. Use notifications for real-time updates on status changes.",
+    question: "What does the super admin do?",
+    answer: "Super admin manages all users, views mentorships and logins, maintains blacklist and platform configuration.",
   },
 ];
 
 export const QUICK_START_ROLES: { value: RolePlanId; label: string }[] = [
-  { value: "REFERRER", label: "Referrer — earn on hires" },
-  { value: "EMPLOYER", label: "Employer — post jobs" },
+  { value: "MENTOR", label: "Mentor — guide others" },
+  { value: "MENTEE", label: "Mentee — find a mentor" },
 ];
 
 export const FOOTER_LINKS = {
   quick: [
     { href: "#plans", label: "Choose a role" },
-    { href: "#rewards", label: "Rewards" },
     { href: "#how-it-works", label: "How it works" },
     { href: "#faq", label: "FAQ" },
     { href: "/login", label: "Sign in" },
     { href: "/register", label: "Register" },
   ],
   contact: {
-    email: "admin@trusthire.com",
-    tagline: "Where trusted hiring comes first.",
+    email: "superadmin@trusthire.com",
+    tagline: "Where mentorship comes first.",
   },
 };

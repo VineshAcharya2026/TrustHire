@@ -1,107 +1,93 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { syncJobSkills } from "../lib/skills";
 
 const prisma = new PrismaClient();
 
 const SKILL_NAMES = [
   "React",
   "TypeScript",
-  "Next.js",
-  "Node.js",
-  "Rust",
-  "PostgreSQL",
   "Leadership",
   "System Design",
+  "Career Growth",
+  "Interview Prep",
 ];
 
 async function main() {
   const hash = await bcrypt.hash("Password123!", 12);
 
-  for (const name of SKILL_NAMES) {
-    await prisma.skill.upsert({ where: { name }, create: { name }, update: {} });
-  }
-
   await prisma.platformConfig.upsert({
-    where: { key: "max_referrals_per_day" },
-    create: { key: "max_referrals_per_day", value: "5" },
+    where: { key: "default_max_mentees" },
+    create: { key: "default_max_mentees", value: "5" },
     update: { value: "5" },
   });
 
-  const employer = await prisma.user.upsert({
-    where: { email: "careers@acme.com" },
-    update: {},
+  await prisma.user.upsert({
+    where: { email: "superadmin@trusthire.com" },
+    update: { role: "SUPER_ADMIN", status: "ACTIVE" },
     create: {
-      email: "careers@acme.com",
+      email: "superadmin@trusthire.com",
+      passwordHash: hash,
+      role: "SUPER_ADMIN",
+      status: "ACTIVE",
+      profile: { create: { firstName: "Super", lastName: "Admin" } },
+    },
+  });
+
+  const mentor = await prisma.user.upsert({
+    where: { email: "mentor@trusthire.com" },
+    update: { role: "MENTOR", status: "ACTIVE" },
+    create: {
+      email: "mentor@trusthire.com",
       phone: "+919876543210",
       passwordHash: hash,
-      role: "EMPLOYER",
+      role: "MENTOR",
       status: "ACTIVE",
-      profile: { create: { firstName: "Marcus", lastName: "Vance" } },
-      employer: {
-        create: { companyName: "Acme Corp", website: "https://acme.com", verified: true },
+      profile: { create: { firstName: "Raj", lastName: "Sharma" } },
+      mentorProfile: {
+        create: {
+          company: "TrustHire",
+          title: "Staff Engineer",
+          expertise: SKILL_NAMES.slice(0, 4),
+          yearsExp: 12,
+          maxMentees: 5,
+        },
       },
     },
-    include: { employer: true },
   });
 
-  const referrer = await prisma.user.upsert({
-    where: { email: "jane.doe@staffing.com" },
-    update: {},
+  const mentee = await prisma.user.upsert({
+    where: { email: "mentee@trusthire.com" },
+    update: { role: "MENTEE", status: "ACTIVE" },
     create: {
-      email: "jane.doe@staffing.com",
+      email: "mentee@trusthire.com",
       phone: "+919876543211",
       passwordHash: hash,
-      role: "REFERRER",
+      role: "MENTEE",
       status: "ACTIVE",
-      profile: { create: { firstName: "Jane", lastName: "Doe" } },
+      profile: { create: { firstName: "Priya", lastName: "Patel" } },
+      menteeProfile: {
+        create: {
+          currentRole: "Junior Developer",
+          goals: "Transition to senior frontend role within 12 months",
+          desiredSkills: ["React", "TypeScript", "System Design"],
+        },
+      },
     },
   });
 
-  if (employer.employer) {
-    const existingJob = await prisma.job.findFirst({
-      where: { employerId: employer.employer.id, title: "Senior Frontend Engineer" },
+  const existing = await prisma.mentorship.findFirst({
+    where: { mentorId: mentor.id, menteeId: mentee.id },
+  });
+  if (!existing) {
+    await prisma.mentorship.create({
+      data: { mentorId: mentor.id, menteeId: mentee.id, status: "ACTIVE" },
     });
-
-    if (!existingJob) {
-      const job = await prisma.job.create({
-        data: {
-          employerId: employer.employer.id,
-          title: "Senior Frontend Engineer",
-          description: "Build modern React applications with TypeScript and Next.js.",
-          requirements: "5+ years React, TypeScript, team leadership",
-          rewardAmount: 50000,
-        },
-      });
-      await syncJobSkills(job.id, ["React", "TypeScript", "Next.js", "Leadership"]);
-
-      const job2 = await prisma.job.create({
-        data: {
-          employerId: employer.employer.id,
-          title: "Rust Core Developer",
-          description: "Scale backend services with Rust and PostgreSQL.",
-          requirements: "3+ years Rust, async systems",
-          rewardAmount: 80000,
-        },
-      });
-      await syncJobSkills(job2.id, ["Rust", "PostgreSQL", "System Design"]);
-
-      await prisma.referral.create({
-        data: {
-          jobId: job.id,
-          referrerId: referrer.id,
-          candidateName: "Alice Carter",
-          candidateEmail: "alice.carter@developer.com",
-          candidatePhone: "+919876543214",
-          status: "SUBMITTED",
-        },
-      });
-    }
   }
 
   console.log("Seed complete.");
-  console.log("Employer: careers@acme.com / Password123!");
-  console.log("Referrer: jane.doe@staffing.com / Password123!");
+  console.log("Super Admin: superadmin@trusthire.com / Password123!");
+  console.log("Mentor: mentor@trusthire.com / Password123!");
+  console.log("Mentee: mentee@trusthire.com / Password123!");
 }
 
 main()

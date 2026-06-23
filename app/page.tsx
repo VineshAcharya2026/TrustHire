@@ -1,7 +1,6 @@
 import { LandingHeader } from "@/components/home/LandingHeader";
 import { LandingHero } from "@/components/home/LandingHero";
 import { QuickStartForm } from "@/components/home/QuickStartForm";
-import { ReferralIntentStrip } from "@/components/home/ReferralIntentStrip";
 import { BenefitsSection } from "@/components/home/BenefitsSection";
 import { RolePlanSection } from "@/components/home/RolePlanSection";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
@@ -15,7 +14,6 @@ export default function HomePage() {
       <main>
         <LandingHero />
         <QuickStartForm />
-        <ReferralIntentStrip />
         <BenefitsSection />
         <RolePlanSection />
         <HowItWorksSection />

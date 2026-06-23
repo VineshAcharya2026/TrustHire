@@ -61,8 +61,9 @@ export default function LoginPage() {
     await fetch("/api/auth/login-log", { method: "POST" });
 
     const paths: Record<string, string> = {
-      EMPLOYER: "/dashboard/employer",
-      REFERRER: "/dashboard/referrer",
+      SUPER_ADMIN: "/dashboard/admin",
+      MENTOR: "/dashboard/mentor",
+      MENTEE: "/dashboard/mentee",
     };
     router.push(paths[role] || "/");
   }
@@ -78,15 +79,15 @@ export default function LoginPage() {
         </div>
         <div className="max-w-md space-y-6">
           <h1 className="text-4xl font-bold leading-tight tracking-tight">
-            Hire through trusted referrals
+            Grow through mentorship
           </h1>
           <p className="text-lg text-white/70">
-            Connect employers with referrers. Submit candidates, track referrals, and review all sign-in activity.
+            Connect mentors and mentees. Set goals, find guidance, and track mentorship journeys.
           </p>
           <div className="space-y-4 pt-4">
             {[
-              { icon: Users, text: "Referrer network" },
-              { icon: Shield, text: "Employer login oversight" },
+              { icon: Users, text: "Expert mentor network" },
+              { icon: Shield, text: "Super admin oversight" },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3 text-white/80">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
@@ -97,7 +98,7 @@ export default function LoginPage() {
             ))}
           </div>
         </div>
-        <p className="text-sm text-white/40">© TrustHire · Referral hiring platform</p>
+        <p className="text-sm text-white/40">© TrustHire · Mentorship platform</p>
       </div>
 
       <div className="flex flex-1 items-center justify-center bg-surface px-4 py-12 lg:rounded-l-[2rem]">

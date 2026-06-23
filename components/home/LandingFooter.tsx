@@ -61,9 +61,9 @@ export function LandingFooter() {
       <div className="bg-landing-navy px-4 py-8">
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-xs leading-relaxed text-white/70">
-            TrustHire is a referral hiring platform for Indian businesses. Referral bounties,
-            milestone payouts, and mentorship features are subject to admin approval and platform
-            terms. Reward amounts vary by job posting. Demo accounts available for evaluation.
+            TrustHire is a mentorship platform connecting mentors and mentees.
+            Mentorship requests and platform access are subject to super admin oversight and platform terms.
+            Demo accounts available for evaluation.
           </p>
           <p className="mt-4 text-center text-xs text-white/50">
             © {new Date().getFullYear()} TrustHire. All rights reserved.

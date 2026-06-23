@@ -8,25 +8,71 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  phone         String?        @unique
-  passwordHash  String
-  role          Role           @default(REFERRER)
-  status        UserStatus     @default(ACTIVE)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  profile       Profile?
-  employer      Employer?
-  referrals     Referral[]
-  auditLogs     AuditLog[]
-  notifications Notification[]
-  loginEvents   LoginEvent[]
+  id             String         @id @default(cuid())
+  email          String         @unique
+  phone          String?        @unique
+  passwordHash   String
+  role           Role           @default(MENTEE)
+  status         UserStatus     @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  profile        Profile?
+  mentorProfile  MentorProfile?
+  menteeProfile  MenteeProfile?
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+  loginEvents    LoginEvent[]
+  mentorSessions    Mentorship[]       @relation("MentorUser")
+  menteeSessions    Mentorship[]       @relation("MenteeUser")
+  memberReflection  MemberReflection?
+}
+
+enum LeadershipLoneliness {
+  FREQUENTLY
+  OCCASIONALLY
+  RARELY
+  NEVER
+}
+
+enum GentleCommitment {
+  YES_REFLECTS_INTENTIONS
+  STILL_EXPLORING
+}
+
+model MemberReflection {
+  id                        String                @id @default(cuid())
+  userId                    String                @unique
+  user                      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  introduction              String?               @db.Text
+  proudestAchievement       String?               @db.Text
+  guidingValues             String?               @db.Text
+  standFor                  String?               @db.Text
+  admiredPerson             String?               @db.Text
+  meaningPurpose            String?               @db.Text
+  dreamMission              String?               @db.Text
+  societalAspiration        String?               @db.Text
+  othersDescribeYou         String?               @db.Text
+  valuedQualities           String[]
+  energizingPeople          String?               @db.Text
+  differentBeliefsApproach  String?               @db.Text
+  confidentialityImportance Int?
+  supportWays               String[]
+  contributions             String?               @db.Text
+  leadershipLoneliness      LeadershipLoneliness?
+  supportNeeded             String?               @db.Text
+  sharingTopics             String?               @db.Text
+  rememberedFor             String?               @db.Text
+  additionalNotes           String?               @db.Text
+  gentleCommitment          GentleCommitment?
+  completedAt               DateTime?
+  createdAt                 DateTime              @default(now())
+  updatedAt                 DateTime              @updatedAt
 }
 
 enum Role {
-  EMPLOYER
-  REFERRER
+  SUPER_ADMIN
+  MENTOR
+  MENTEE
 }
 
 enum UserStatus {
@@ -35,6 +81,13 @@ enum UserStatus {
   SUSPENDED
   FROZEN
   DELETED
+}
+
+enum MentorshipStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  REJECTED
 }
 
 model Profile {
@@ -47,70 +100,38 @@ model Profile {
   bio       String?
 }
 
-model Employer {
-  id          String  @id @default(cuid())
-  userId      String  @unique
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyName String
-  website     String?
-  verified    Boolean @default(false)
-  jobs        Job[]
+model MentorProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company    String?
+  title      String?
+  expertise  String[]
+  yearsExp   Int?
+  maxMentees Int      @default(5)
 }
 
-model Skill {
-  id   String     @id @default(cuid())
-  name String     @unique
-  jobs JobSkill[]
+model MenteeProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentRole   String?
+  goals         String?
+  desiredSkills String[]
 }
 
-model JobSkill {
-  jobId   String
-  skillId String
-  job     Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+model Mentorship {
+  id        String           @id @default(cuid())
+  mentorId  String
+  menteeId  String
+  mentor    User             @relation("MentorUser", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee    User             @relation("MenteeUser", fields: [menteeId], references: [id], onDelete: Cascade)
+  status    MentorshipStatus @default(PENDING)
+  message   String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  @@id([jobId, skillId])
-}
-
-model Job {
-  id           String     @id @default(cuid())
-  employerId   String
-  employer     Employer   @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  title        String
-  description  String
-  requirements String?
-  rewardAmount Float
-  isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  referrals    Referral[]
-  skills       JobSkill[]
-}
-
-model Referral {
-  id             String         @id @default(cuid())
-  jobId          String
-  job            Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  referrerId     String
-  referrer       User           @relation(fields: [referrerId], references: [id])
-  candidateName  String
-  candidateEmail String
-  candidatePhone String
-  resumeUrl      String?
-  status         ReferralStatus @default(SUBMITTED)
-  submittedAt    DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-
-  @@unique([jobId, candidateEmail])
-}
-
-enum ReferralStatus {
-  SUBMITTED
-  SHORTLISTED
-  INTERVIEW_SCHEDULED
-  INTERVIEW_DONE
-  OFFER_MADE
-  HIRED
-  REJECTED
+  @@unique([mentorId, menteeId])
 }
 
 model LoginEvent {
@@ -125,16 +146,15 @@ model LoginEvent {
 }
 
 model AuditLog {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   userId     String?
-  user       User?     @relation(fields: [userId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
   action     String
   entity     String
   entityId   String?
-  referralId String?
   ipAddress  String?
   metadata   Json?
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime @default(now())
 }
 
 model Blacklist {

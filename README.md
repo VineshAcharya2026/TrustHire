@@ -1,6 +1,6 @@
 # TrustHire
 
-Production-ready referral hiring platform built with Next.js 14, PostgreSQL, Prisma, and NextAuth.
+Production-ready mentorship platform built with Next.js 14, PostgreSQL, Prisma, and NextAuth.
 
 ## Stack
 
@@ -8,6 +8,16 @@ Production-ready referral hiring platform built with Next.js 14, PostgreSQL, Pri
 - **Backend:** Next.js API Routes
 - **Database:** PostgreSQL + Prisma ORM
 - **Auth:** NextAuth.js (credentials, JWT, role-based access)
+
+## Roles
+
+| Role | Dashboard | Description |
+|------|-----------|-------------|
+| `SUPER_ADMIN` | `/dashboard/admin` | Full platform oversight — users, mentorships, logins, blacklist, config, audit |
+| `MENTOR` | `/dashboard/mentor` | Profile, mentee requests, active mentorships |
+| `MENTEE` | `/dashboard/mentee` | Find mentors, set goals, track mentorships |
+
+Public registration is open for **Mentor** and **Mentee** only.
 
 ## Setup
 
@@ -23,7 +33,7 @@ npm install
 cp .env.example .env
 ```
 
-3. Set `DATABASE_URL` and `NEXTAUTH_SECRET` in `.env`.
+3. Set `DATABASE_URL` (PostgreSQL) and `NEXTAUTH_SECRET` in `.env`.
 
 4. Generate Prisma client and push schema:
 
@@ -53,21 +63,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Demo accounts (after seed)
 
-| Role     | Email                   | Password      |
-|----------|-------------------------|---------------|
-| Admin    | admin@trusthire.com     | Password123!  |
-| Employer | careers@acme.com        | Password123!  |
-| Referrer | jane.doe@staffing.com   | Password123!  |
-
-## Optional integrations
-
-Configure in `.env` for full functionality:
-
-- **SendGrid SMTP** — email notifications
-- **Twilio** — WhatsApp alerts
-- **Cloudinary** — resume uploads (signed URLs)
-
-Without these, notifications log to console in development.
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin | superadmin@trusthire.com | Password123! |
+| Mentor | mentor@trusthire.com | Password123! |
+| Mentee | mentee@trusthire.com | Password123! |
 
 ## Deploy to Vercel
 
@@ -88,8 +88,6 @@ npx vercel env pull .env.production.local
 npm run db:setup-production
 ```
 
-Neon terms (one-time): https://vercel.com/vineshjm-3253s-projects/~/integrations/accept-terms/neon
-
 ### 2. Set Vercel environment variables
 
 In **Vercel → Project → Settings → Environment Variables** (Production + Preview):
@@ -102,11 +100,8 @@ In **Vercel → Project → Settings → Environment Variables** (Production + P
 
 ### 3. Initialize the production database (one-time)
 
-From your machine, with production `DATABASE_URL` in `.env`:
-
 ```bash
-npm run db:push
-npm run db:seed
+npm run db:setup-production
 ```
 
 ### 4. Deploy

@@ -9,20 +9,16 @@ import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
-type RegisterRole = "REFERRER" | "EMPLOYER";
+type RegisterRole = "MENTOR" | "MENTEE";
 
 const ROLES: { id: RegisterRole; label: string }[] = [
-  { id: "REFERRER", label: "Referrer" },
-  { id: "EMPLOYER", label: "Employer" },
+  { id: "MENTOR", label: "Mentor" },
+  { id: "MENTEE", label: "Mentee" },
 ];
 
-const VALID_ROLES: RegisterRole[] = ["REFERRER", "EMPLOYER"];
-
 function parseRoleParam(value: string | null): RegisterRole {
-  if (value && VALID_ROLES.includes(value as RegisterRole)) {
-    return value as RegisterRole;
-  }
-  return "REFERRER";
+  if (value === "MENTOR" || value === "MENTEE") return value;
+  return "MENTEE";
 }
 
 export default function RegisterPage() {
@@ -42,7 +38,7 @@ export default function RegisterPage() {
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [role, setRole] = useState<RegisterRole>("REFERRER");
+  const [role, setRole] = useState<RegisterRole>("MENTEE");
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -50,7 +46,11 @@ function RegisterForm() {
     phone: "",
     password: "",
     companyName: "",
-    website: "",
+    title: "",
+    expertise: "",
+    currentRole: "",
+    goals: "",
+    desiredSkills: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -80,11 +80,18 @@ function RegisterForm() {
     setLoading(false);
 
     if (!res.ok) {
-      setError(typeof data.error === "string" ? data.error : "Registration failed");
+      const msg =
+        typeof data.error === "string"
+          ? data.error
+          : data.error?.formErrors?.[0] ??
+            data.error?.fieldErrors?.email?.[0] ??
+            data.error?.fieldErrors?.password?.[0] ??
+            "Registration failed";
+      setError(msg);
       return;
     }
 
-    router.push("/pending-approval");
+    router.push("/login");
   }
 
   return (
@@ -93,7 +100,7 @@ function RegisterForm() {
         <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
         <div className="p-8">
           <h2 className="text-2xl font-bold text-primary">Create your account</h2>
-          <p className="mt-1 text-sm text-muted">Join TrustHire — refer talent or hire through referrals</p>
+          <p className="mt-1 text-sm text-muted">Join TrustHire as a mentor or mentee</p>
 
           <div className="mb-6 mt-6 grid grid-cols-2 gap-2">
             {ROLES.map((r) => (
@@ -134,15 +141,36 @@ function RegisterForm() {
               <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             </div>
 
-            {role === "EMPLOYER" && (
+            {role === "MENTOR" && (
               <>
                 <div className="space-y-2">
-                  <Label>Company name</Label>
-                  <Input value={form.companyName} onChange={(e) => setForm({ ...form, companyName: e.target.value })} required />
+                  <Label>Company</Label>
+                  <Input value={form.companyName} onChange={(e) => setForm({ ...form, companyName: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Website (optional)</Label>
-                  <Input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://" />
+                  <Label>Title</Label>
+                  <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Expertise (comma-separated)</Label>
+                  <Input value={form.expertise} onChange={(e) => setForm({ ...form, expertise: e.target.value })} placeholder="React, Leadership" />
+                </div>
+              </>
+            )}
+
+            {role === "MENTEE" && (
+              <>
+                <div className="space-y-2">
+                  <Label>Current role</Label>
+                  <Input value={form.currentRole} onChange={(e) => setForm({ ...form, currentRole: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Goals</Label>
+                  <Input value={form.goals} onChange={(e) => setForm({ ...form, goals: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Desired skills (comma-separated)</Label>
+                  <Input value={form.desiredSkills} onChange={(e) => setForm({ ...form, desiredSkills: e.target.value })} placeholder="TypeScript, System Design" />
                 </div>
               </>
             )}

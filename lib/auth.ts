@@ -37,12 +37,18 @@ export async function requireRole(roles: Role | Role[]) {
   return { error: null, session };
 }
 
+export async function requireSuperAdmin() {
+  return requireRole("SUPER_ADMIN");
+}
+
 export function dashboardPathForRole(role: Role): string {
   switch (role) {
-    case "EMPLOYER":
-      return "/dashboard/employer";
-    case "REFERRER":
-      return "/dashboard/referrer";
+    case "SUPER_ADMIN":
+      return "/dashboard/admin";
+    case "MENTOR":
+      return "/dashboard/mentor";
+    case "MENTEE":
+      return "/dashboard/mentee";
     default:
       return "/";
   }
