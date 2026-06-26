@@ -1,0 +1,50 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { requireSuperAdmin } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { awardCreditsAndRecalculate, CREDIT_AMOUNTS } from "@/lib/credits";
+import { recalculateThoughtLeadershipScore } from "@/lib/mentor-scores";
+
+const schema = z.object({
+  verified: z.boolean(),
+});
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { error } = await requireSuperAdmin();
+  if (error) return error;
+
+  const body = await request.json();
+  const parsed = schema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const existing = await prisma.mentorshipOutcome.findUnique({
+    where: { id: params.id },
+  });
+  if (!existing) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const outcome = await prisma.mentorshipOutcome.update({
+    where: { id: params.id },
+    data: { verified: parsed.data.verified },
+  });
+
+  if (parsed.data.verified && !existing.verified) {
+    await awardCreditsAndRecalculate(
+      existing.mentorId,
+      CREDIT_AMOUNTS.NATION_BUILDING_OUTCOME,
+      "NATION_BUILDING_OUTCOME",
+      `Verified outcome: ${existing.outcomeType}`,
+      existing.mentorshipId
+    );
+  } else {
+    await recalculateThoughtLeadershipScore(existing.mentorId);
+  }
+
+  return NextResponse.json(outcome);
+}

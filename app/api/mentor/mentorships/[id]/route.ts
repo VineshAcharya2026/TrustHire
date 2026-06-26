@@ -3,9 +3,11 @@ import { z } from "zod";
 import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createNotification } from "@/lib/notifications";
+import { awardCreditsAndRecalculate, CREDIT_AMOUNTS } from "@/lib/credits";
 
 const schema = z.object({
   status: z.enum(["ACTIVE", "REJECTED", "COMPLETED"]),
+  isFreeOrConcessional: z.boolean().optional(),
 });
 
 export async function PATCH(
@@ -41,8 +43,32 @@ export async function PATCH(
 
   const updated = await prisma.mentorship.update({
     where: { id: params.id },
-    data: { status: parsed.data.status },
+    data: {
+      status: parsed.data.status,
+      ...(parsed.data.isFreeOrConcessional !== undefined
+        ? { isFreeOrConcessional: parsed.data.isFreeOrConcessional }
+        : {}),
+    },
   });
+
+  if (parsed.data.status === "COMPLETED" && mentorship.status !== "COMPLETED") {
+    await awardCreditsAndRecalculate(
+      session.user.id,
+      CREDIT_AMOUNTS.MENTORSHIP_COMPLETED,
+      "MENTORSHIP_COMPLETED",
+      "Mentorship completed",
+      params.id
+    );
+    if (updated.isFreeOrConcessional) {
+      await awardCreditsAndRecalculate(
+        session.user.id,
+        CREDIT_AMOUNTS.FREE_MENTORSHIP,
+        "FREE_MENTORSHIP",
+        "Free/concessional mentorship completed",
+        params.id
+      );
+    }
+  }
 
   const menteeName = mentorship.mentee.profile
     ? `${mentorship.mentee.profile.firstName} ${mentorship.mentee.profile.lastName}`

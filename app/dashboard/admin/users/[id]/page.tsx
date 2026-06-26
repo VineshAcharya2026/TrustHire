@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { fetchJson } from "@/lib/api-utils";
 import { formatDate } from "@/lib/utils";
 import { Mail, Phone, Shield, Calendar } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { MemberReflectionPanel } from "@/components/reflection/MemberReflectionPanel";
 
 type User = {
@@ -20,7 +22,15 @@ type User = {
   status: string;
   createdAt: string;
   profile?: { firstName: string; lastName: string };
-  mentorProfile?: { company: string; title: string; expertise: string[]; maxMentees: number };
+  mentorProfile?: {
+    company: string;
+    title: string;
+    expertise: string[];
+    maxMentees: number;
+    creditsBalance?: number;
+    thoughtLeadershipScore?: number;
+    isEliteFounder100?: boolean;
+  };
   menteeProfile?: { currentRole: string; goals: string; desiredSkills: string[] };
   memberReflection?: {
     id: string;
@@ -56,17 +66,36 @@ export default function AdminUserDetailPage() {
   const { id } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState("");
+  const [creditAmount, setCreditAmount] = useState("10");
+  const [creditReason, setCreditReason] = useState("Admin bonus");
+  const [eliteFounder, setEliteFounder] = useState(false);
 
   const load = () => {
     fetchJson<User>(`/api/admin/users/${id}`).then(({ data, error: err }) => {
       if (err) setError(err);
-      else if (data) setUser(data);
+      else if (data) {
+        setUser(data);
+        setEliteFounder(data.mentorProfile?.isEliteFounder100 ?? false);
+      }
     });
   };
 
   useEffect(() => {
     load();
   }, [id]);
+
+  async function adjustMentorCredits() {
+    await fetch(`/api/admin/mentors/${id}/credits`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: Number(creditAmount),
+        reason: creditReason,
+        isEliteFounder100: eliteFounder,
+      }),
+    });
+    load();
+  }
 
   async function suspend() {
     await fetch(`/api/admin/users/${id}/suspend`, { method: "PATCH" });
@@ -128,11 +157,28 @@ export default function AdminUserDetailPage() {
         </div>
 
         {user.mentorProfile && (
-          <div className="rounded-xl border border-primary/8 bg-white p-5 shadow-card space-y-2">
+          <div className="rounded-xl border border-primary/8 bg-white p-5 shadow-card space-y-3">
             <h2 className="font-semibold text-primary">Mentor profile</h2>
             <p className="text-sm">{user.mentorProfile.title} at {user.mentorProfile.company}</p>
             <p className="text-sm text-muted">Expertise: {user.mentorProfile.expertise.join(", ") || "—"}</p>
             <p className="text-sm text-muted">Max mentees: {user.mentorProfile.maxMentees}</p>
+            <p className="text-sm text-muted">Credits: {user.mentorProfile.creditsBalance ?? 0}</p>
+            <p className="text-sm text-muted">Thought leadership: {user.mentorProfile.thoughtLeadershipScore ?? 0}/100</p>
+            {user.mentorProfile.isEliteFounder100 && <Badge variant="accent">Elite Founder 100</Badge>}
+            <div className="space-y-2 border-t border-primary/8 pt-3">
+              <Label>Adjust credits</Label>
+              <div className="flex gap-2">
+                <Input type="number" value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} className="w-24" />
+                <Input value={creditReason} onChange={(e) => setCreditReason(e.target.value)} placeholder="Reason" />
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={eliteFounder} onChange={(e) => setEliteFounder(e.target.checked)} className="accent-accent" />
+                Elite Founder 100
+              </label>
+              <Button size="sm" variant="accent" onClick={adjustMentorCredits}>
+                Save mentor settings
+              </Button>
+            </div>
           </div>
         )}
 

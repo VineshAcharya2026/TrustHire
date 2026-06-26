@@ -9,6 +9,10 @@ import {
   GraduationCap,
   Target,
   HeartHandshake,
+  UserPlus,
+  Globe,
+  Crown,
+  CheckCircle,
 } from "lucide-react";
 import type { NavItem } from "@/components/layout/Sidebar";
 
@@ -16,6 +20,8 @@ export const superAdminNav: NavItem[] = [
   { href: "/dashboard/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/admin/users", label: "Users", icon: Users },
   { href: "/dashboard/admin/mentorships", label: "Mentorships", icon: GraduationCap },
+  { href: "/dashboard/admin/inner-circle", label: "Inner Circle", icon: Crown },
+  { href: "/dashboard/admin/outcomes", label: "Outcomes", icon: CheckCircle },
   { href: "/dashboard/admin/logins", label: "Logins", icon: LogIn },
   { href: "/dashboard/admin/blacklist", label: "Blacklist", icon: ShieldBan },
   { href: "/dashboard/admin/config", label: "Config", icon: Settings },
@@ -26,6 +32,9 @@ export const mentorNav: NavItem[] = [
   { href: "/dashboard/mentor", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/mentor/mentees", label: "Mentees", icon: Users },
   { href: "/dashboard/mentor/profile", label: "Profile", icon: UserCircle },
+  { href: "/dashboard/mentor/friends", label: "Find Friends", icon: UserPlus },
+  { href: "/dashboard/mentor/nation-building", label: "Nation Building", icon: Globe },
+  { href: "/dashboard/mentor/inner-circle", label: "Inner Circle", icon: Crown },
   { href: "/dashboard/mentor/reflection", label: "Reflection", icon: HeartHandshake },
 ];
 

@@ -50,10 +50,43 @@ async function main() {
           expertise: SKILL_NAMES.slice(0, 4),
           yearsExp: 12,
           maxMentees: 5,
+          city: "Mumbai",
+          industry: "Technology",
+          seniorityLevel: "SENIOR",
+          interests: ["Leadership", "Entrepreneurship"],
+          linkedInUrl: "https://linkedin.com/in/example",
+          isEliteFounder100: true,
+          offersFreeMentorship: true,
+          thoughtLeadershipScore: 42,
+          creditsBalance: 25,
         },
       },
     },
+    include: { mentorProfile: true },
   });
+
+  if (mentor.mentorProfile) {
+    await prisma.mentorProfile.update({
+      where: { id: mentor.mentorProfile.id },
+      data: {
+        city: "Mumbai",
+        industry: "Technology",
+        seniorityLevel: "SENIOR",
+        isEliteFounder100: true,
+        offersFreeMentorship: true,
+        thoughtLeadershipScore: 42,
+        creditsBalance: 25,
+      },
+    });
+    await prisma.mentorSkill.deleteMany({ where: { mentorId: mentor.mentorProfile.id } });
+    await prisma.mentorSkill.createMany({
+      data: [
+        { mentorId: mentor.mentorProfile.id, skill: "Leadership", masteryLevel: 5 },
+        { mentorId: mentor.mentorProfile.id, skill: "System Design", masteryLevel: 4 },
+        { mentorId: mentor.mentorProfile.id, skill: "React", masteryLevel: 5 },
+      ],
+    });
+  }
 
   const mentee = await prisma.user.upsert({
     where: { email: "mentee@trusthire.com" },
